@@ -1,0 +1,6 @@
+me\ggamer55\bcm\bukkit\CommandSenderAuthorizer.class
+me\ggamer55\bcm\bukkit\providers\PlayerProvider.class
+me\ggamer55\bcm\bukkit\BukkitCommandHandler.class
+me\ggamer55\bcm\bukkit\BukkitCommandWrapper.class
+me\ggamer55\bcm\bukkit\providers\CommandSenderProvider.class
+me\ggamer55\bcm\bukkit\providers\OfflinePlayerProvider.class
