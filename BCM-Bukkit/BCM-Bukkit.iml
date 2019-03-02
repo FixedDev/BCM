@@ -11,7 +11,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="BCM-Universal" />
+    <orderEntry type="library" name="Maven: us.sparknetwork:BCM-Universal:1.2.1" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.github.paperspigot:paperspigot-api:1.8.8-R0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: commons-lang:commons-lang:2.6" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.googlecode.json-simple:json-simple:1.1.1" level="project" />
