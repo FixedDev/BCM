@@ -10,7 +10,5 @@ import java.lang.annotation.Target;
 public @interface Parameter {
     String value();
 
-    String defaultValue() default "";
-
     boolean isFlag() default false;
 }
