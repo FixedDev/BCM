@@ -23,6 +23,6 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.yaml:snakeyaml:1.15" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.md-5:bungeecord-chat:1.8-SNAPSHOT" level="project" />
     <orderEntry type="module" module-name="BCM-Bukkit" />
-    <orderEntry type="library" name="Maven: us.sparknetwork:BCM-Universal:1.2.1" level="project" />
+    <orderEntry type="module" module-name="BCM-Universal" />
   </component>
 </module>

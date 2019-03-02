@@ -2,6 +2,7 @@ package me.ggamer55.bcm.bukkit;
 
 import me.ggamer55.bcm.parametric.*;
 import me.ggamer55.bcm.parametric.annotation.Command;
+import me.ggamer55.bcm.parametric.annotation.Optional;
 import me.ggamer55.bcm.parametric.annotation.Parameter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,7 +29,7 @@ public class TestPlugin extends JavaPlugin implements Listener {
     class TestCommand implements CommandClass {
 
         @Command(names = "test hola", min = 1, usage = "/<command> <hello> <player>")
-        public boolean testCommand(@Parameter("sender") CommandSender sender, @Parameter("hello") boolean hello, @Parameter("target") Player player) {
+        public boolean testCommand(CommandSender sender, @Parameter("hello") boolean hello, @Parameter("target") @Optional("self") String player) {
             sender.sendMessage("hello: " + hello);
             sender.sendMessage("Player: " + player);
             return true;
