@@ -1,5 +1,6 @@
 package me.ggamer55.bcm.parametric;
 
+import me.ggamer55.bcm.parametric.annotation.Optional;
 import me.ggamer55.bcm.parametric.annotation.Parameter;
 
 import java.lang.annotation.Annotation;
@@ -16,13 +17,13 @@ class ParameterData {
 
     private String defaultValue;
 
-    public ParameterData(Class<?> type, Parameter parameter, List<Annotation> modifiers) {
+    public ParameterData(Class<?> type, Parameter parameter, Optional optional, List<Annotation> modifiers) {
         name = parameter.value();
         this.type = type;
         this.modifiers = modifiers;
 
         flag = parameter.isFlag();
-        defaultValue = parameter.defaultValue();
+        defaultValue = optional.value();
     }
 
     public String getName() {
