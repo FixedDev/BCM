@@ -11,8 +11,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>BCM-Universal</module>
-        <module>BukkitTest</module>
         <module>BCM-Bukkit</module>
+        <module>BukkitTest</module>
     </modules>
 
     <properties>
