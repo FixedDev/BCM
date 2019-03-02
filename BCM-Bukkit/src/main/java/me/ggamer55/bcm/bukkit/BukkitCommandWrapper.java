@@ -49,7 +49,7 @@ public class BukkitCommandWrapper extends Command {
     public boolean execute(CommandSender commandSender, String label, String[] args) {
         StringJoiner joiner = new StringJoiner(" ");
 
-        joiner.add(label);
+        joiner.add(this.getName());
 
         for (String arg : args) {
             joiner.add(arg);
