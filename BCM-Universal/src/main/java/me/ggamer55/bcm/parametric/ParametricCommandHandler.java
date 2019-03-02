@@ -285,41 +285,68 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
                 }
 
                 @Override
-                public String defaultValue() {
-                    return "";
+                public boolean isFlag() {
+                    return false;
+                }
+            }, emptyOptionalAnnotation(), modifiers);
+        }
+
+        Parameter param = null;
+        me.ggamer55.bcm.parametric.annotation.Optional optional = emptyOptionalAnnotation();
+
+        for (Annotation annotation : annotations) {
+            if (annotation instanceof Parameter) {
+                param = (Parameter) annotation;
+            }
+            if(annotation instanceof me.ggamer55.bcm.parametric.annotation.Optional){
+                optional = (me.ggamer55.bcm.parametric.annotation.Optional) annotation;
+            }
+            modifiers.add(annotation);
+        }
+
+        if (param == null) {
+            logger.log(Level.WARNING, "The method {0} of class {1} has a missing parameter annotation, using class name.", new Object[]{clazzMethod.getDeclaringClass().getName(), clazzMethod.getName()});
+
+            return new ParameterData(type, new Parameter() {
+                @Override
+                public Class<? extends Annotation> annotationType() {
+                    return Parameter.class;
+                }
+
+                @Override
+                public String value() {
+                    return type.getSimpleName();
                 }
 
                 @Override
                 public boolean isFlag() {
                     return false;
                 }
-            }, modifiers);
-        }
-
-        Parameter param = null;
-
-        for (Annotation annotation : annotations) {
-            if (annotation instanceof Parameter) {
-                param = (Parameter) annotation;
-
-            }
-            modifiers.add(annotation);
-
-        }
-
-        if (param == null) {
-            logger.log(Level.WARNING, "The method {0} of class {1} has a missing parameter annotation.", new Object[]{clazzMethod.getDeclaringClass().getName(), clazzMethod.getName()});
-
-            return null;
+            }, optional, modifiers);
         }
 
         if (param.isFlag() && (type != Boolean.class && type != boolean.class)) {
-            logger.log(Level.WARNING, "The method {0} of class {1} has a flag parameter but the type isn't string.", new Object[]{clazzMethod.getDeclaringClass().getName(), clazzMethod.getName()});
+            logger.log(Level.WARNING, "The method {0} of class {1} has a flag parameter but the type isn't boolean.", new Object[]{clazzMethod.getDeclaringClass().getName(), clazzMethod.getName()});
 
             return null;
         }
 
-        return new ParameterData(type, param, modifiers);
+        return new ParameterData(type, param, optional, modifiers);
+    }
+
+    private me.ggamer55.bcm.parametric.annotation.Optional emptyOptionalAnnotation() {
+        return new me.ggamer55.bcm.parametric.annotation.Optional() {
+
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return me.ggamer55.bcm.parametric.annotation.Optional.class;
+            }
+
+            @Override
+            public String value() {
+                return "";
+            }
+        };
     }
 
     @Override
