@@ -305,8 +305,6 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
         }
 
         if (param == null) {
-            logger.log(Level.WARNING, "The method {0} of class {1} has a missing parameter annotation, using class name.", new Object[]{clazzMethod.getDeclaringClass().getName(), clazzMethod.getName()});
-
             return new ParameterData(type, new Parameter() {
                 @Override
                 public Class<? extends Annotation> annotationType() {
