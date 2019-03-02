@@ -75,7 +75,7 @@ public class BukkitCommandWrapper extends Command {
             String message = ChatColor.RED + ChatColor.translateAlternateColorCodes('&', ex.getMessage());
 
             String[] splittedMessage = message.split("\n");
-            splittedMessage[0] = ChatColor.RED + splittedMessage[0];
+            splittedMessage[0] = ChatColor.RED + "Usage: " + splittedMessage[0];
 
             for (String s : splittedMessage) {
                 commandSender.sendMessage(s);
