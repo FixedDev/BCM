@@ -11,5 +11,8 @@ public interface CommandRegistry {
 
     Optional<ICommand> getCommand(String alias);
 
+    Optional<ICommand> getCommandFromCommandLine(String commandLine);
+
     boolean isCommandRegistered(String alias);
+
 }
