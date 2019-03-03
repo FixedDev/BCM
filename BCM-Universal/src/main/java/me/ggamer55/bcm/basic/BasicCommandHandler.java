@@ -7,9 +7,12 @@ import me.ggamer55.bcm.basic.exceptions.NoMoreArgumentsException;
 import me.ggamer55.bcm.basic.exceptions.NoPermissionsException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,14 +20,14 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
 
     private final Authorizer authorizer;
 
-    private List<ICommand> commands;
+    private Map<String, ICommand> commandMap;
 
     protected Logger logger;
 
     public BasicCommandHandler(Authorizer authorizer, Logger logger) {
         this.authorizer = authorizer;
 
-        commands = new CopyOnWriteArrayList<>();
+        commandMap = new ConcurrentHashMap<>();
 
         this.logger = logger;
     }
@@ -41,58 +44,62 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
 
     @Override
     public boolean dispatchCommand(Namespace namespace, String commandLine) throws CommandException, NoPermissionsException, CommandUsageException, ArgumentsParseException {
-        String[] args = new String[0];
-        Optional<ICommand> found = Optional.empty();
+        String[] args = commandLine.split(" ");
         String label = "";
 
-        for (ICommand commandData : this.commands) {
-            for (String alias : commandData.getNames()) {
-                if ((commandLine.length() == alias.length() && commandLine.toLowerCase().startsWith(alias.toLowerCase()))
-                        || commandLine.toLowerCase().startsWith(alias.toLowerCase() + " ")) {
-                    found = Optional.of(commandData);
-                    label = alias;
-                    if (commandLine.length() > alias.length() + 1) {
-                        args = commandLine.substring(alias.length() + 1).split(" ");
-                    }
-                    break;
-                }
-            }
+        int i = 0;
+        while (!commandMap.containsKey(label) && i < args.length) {
+            label = args[i];
+            i++;
         }
 
-        if (!found.isPresent()) {
+        ICommand command = commandMap.get(label);
+
+        if (command == null) {
             return false;
         }
 
-        ICommand command = found.get();
+        if ((i + 1) >= args.length - 1) {
+            args = new String[0];
+        } else {
+            args = Arrays.copyOfRange(args, i + 1, args.length - 1);
+        }
 
-        if (!command.getSubCommands().isEmpty()) {
-            Optional<ICommand> subCommandFound = Optional.empty();
-            String[] subCommandArgs = new String[0];
+
+        if (!command.getSubCommands().isEmpty() && args.length >= 1) {
+            ICommand subCommandFound;
+            String[] subCommandArgs;
 
             String subCommandLabel = "";
 
-            for (ICommand commandData : command.getSubCommands()) {
-                for (String alias : commandData.getNames()) {
-                    if ((commandLine.length() == (label.length() + alias.length() + 1) && commandLine.toLowerCase().startsWith(label + " " + alias.toLowerCase()))
-                            || commandLine.toLowerCase().startsWith(label + " " + alias.toLowerCase() + " ")) {
-                        subCommandFound = Optional.of(commandData);
-                        subCommandLabel = alias;
-                        if (commandLine.length() > label.length() + alias.length() + 2) {
-                            subCommandArgs = commandLine.substring(label.length() + 1).substring(alias.length() + 1).split(" ");
-                        }
-                        break;
-                    }
+            Map<String, ICommand> subCommands = new HashMap<>();
+
+            for (ICommand subCommand : command.getSubCommands()) {
+                for (String name : subCommand.getNames()) {
+                    subCommands.put(name, subCommand);
                 }
             }
 
-            if (subCommandFound.isPresent()) {
-                command = subCommandFound.get();
+            while (!subCommands.containsKey(subCommandLabel) && i < args.length) {
+                subCommandLabel = args[i];
+                i++;
+            }
+
+            subCommandFound = subCommands.get(subCommandLabel);
+
+            if ((i + 1) >= args.length - 1) {
+                subCommandArgs = new String[0];
+            } else {
+                subCommandArgs = Arrays.copyOfRange(args, i + 1, args.length - 1);
+            }
+
+            if (subCommandFound != null) {
+                command = subCommandFound;
 
                 args = subCommandArgs;
 
                 label = label + " " + subCommandLabel;
             }
-
         }
 
         if (!command.getPermission().trim().isEmpty() && !authorizer.isAuthorized(namespace, command.getPermission())) {
@@ -132,58 +139,62 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
 
     @Override
     public List<String> getCommandSuggestions(Namespace namespace, String commandLine) throws CommandException, NoMoreArgumentsException, NoPermissionsException {
-        String[] args = new String[0];
-        Optional<ICommand> found = Optional.empty();
+        String[] args = commandLine.split(" ");
         String label = "";
 
-        for (ICommand commandData : this.commands) {
-            for (String alias : commandData.getNames()) {
-                if ((commandLine.length() == alias.length() && commandLine.toLowerCase().startsWith(alias.toLowerCase()))
-                        || commandLine.toLowerCase().startsWith(alias.toLowerCase() + " ")) {
-                    found = Optional.of(commandData);
-                    label = alias;
-                    if (commandLine.length() > alias.length() + 1) {
-                        args = commandLine.substring(alias.length() + 1).split(" ");
-                    }
-                    break;
-                }
-            }
+        int i = 0;
+        while (!commandMap.containsKey(label) && i < args.length) {
+            label = args[i];
+            i++;
         }
 
-        if (!found.isPresent()) {
+        ICommand command = commandMap.get(label);
+
+        if (command == null) {
             return new ArrayList<>();
         }
 
-        ICommand command = found.get();
+        if ((i + 1) >= args.length - 1) {
+            args = new String[0];
+        } else {
+            args = Arrays.copyOfRange(args, i + 1, args.length - 1);
+        }
 
-        if (!command.getSubCommands().isEmpty()) {
-            Optional<ICommand> subCommandFound = Optional.empty();
-            String[] subCommandArgs = new String[0];
+
+        if (!command.getSubCommands().isEmpty() && args.length >= 1) {
+            ICommand subCommandFound;
+            String[] subCommandArgs;
 
             String subCommandLabel = "";
 
-            for (ICommand commandData : command.getSubCommands()) {
-                for (String alias : commandData.getNames()) {
-                    if ((commandLine.length() == (label.length() + alias.length() + 1) && commandLine.toLowerCase().startsWith(label + " " + alias.toLowerCase()))
-                            || commandLine.toLowerCase().startsWith(label + " " + alias.toLowerCase() + " ")) {
-                        subCommandFound = Optional.of(commandData);
-                        subCommandLabel = alias;
-                        if (commandLine.length() > label.length() + alias.length() + 2) {
-                            subCommandArgs = commandLine.substring(label.length() + 1).substring(alias.length() + 1).split(" ");
-                        }
-                        break;
-                    }
+            Map<String, ICommand> subCommands = new HashMap<>();
+
+            for (ICommand subCommand : command.getSubCommands()) {
+                for (String name : subCommand.getNames()) {
+                    subCommands.put(name, subCommand);
                 }
             }
 
-            if (subCommandFound.isPresent()) {
-                command = subCommandFound.get();
+            while (!subCommands.containsKey(subCommandLabel) && i < args.length) {
+                subCommandLabel = args[i];
+                i++;
+            }
+
+            subCommandFound = subCommands.get(subCommandLabel);
+
+            if ((i + 1) >= args.length - 1) {
+                subCommandArgs = new String[0];
+            } else {
+                subCommandArgs = Arrays.copyOfRange(args, i + 1, args.length - 1);
+            }
+
+            if (subCommandFound != null) {
+                command = subCommandFound;
 
                 args = subCommandArgs;
 
                 label = label + " " + subCommandLabel;
             }
-
         }
 
         if (!command.getPermission().trim().isEmpty() && !authorizer.isAuthorized(namespace, command.getPermission())) {
@@ -200,51 +211,36 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
     public void registerCommand(ICommand command) {
         logger.log(Level.INFO, "Registered command {0}", command.getNames()[0]);
 
-        this.commands.add(command);
+        for (String name : command.getNames()) {
+            this.commandMap.put(name, command);
+        }
     }
 
     @Override
-    public void unregisterCommand(ICommand command) {
-        while (commands.contains(command)) {
-            commands.remove(command);
+    public void unregisterCommand(ICommand commandToRemove) {
+        for (String name : commandToRemove.getNames()) {
+            ICommand command = commandMap.get(name);
+
+            if (command == commandToRemove) {
+                commandMap.remove(name);
+            }
         }
 
-        logger.log(Level.INFO, "Unregistered command {0}", command.getNames()[0]);
+        logger.log(Level.INFO, "Unregistered command {0}", commandToRemove.getNames()[0]);
     }
 
     @Override
     public void unregisterAllCommands() {
-        new ArrayList<>(commands).forEach(this::unregisterCommand);
+        commandMap.values().forEach(this::unregisterCommand);
     }
 
     @Override
     public Optional<ICommand> getCommand(String commandName) {
-        Optional<ICommand> found = Optional.empty();
-
-        for (ICommand commandData : this.commands) {
-            for (String alias : commandData.getNames()) {
-                if ((commandName.length() == alias.length() && commandName.toLowerCase().startsWith(alias.toLowerCase()))
-                        || commandName.toLowerCase().startsWith(alias.toLowerCase() + " ")) {
-                    found = Optional.of(commandData);
-                    break;
-                }
-            }
-        }
-
-        return found;
+        return Optional.ofNullable(commandMap.get(commandName));
     }
 
     @Override
     public boolean isCommandRegistered(String commandName) {
-        for (ICommand commandData : this.commands) {
-            for (String alias : commandData.getNames()) {
-                if ((commandName.length() == alias.length() && commandName.toLowerCase().startsWith(alias.toLowerCase()))
-                        || commandName.toLowerCase().startsWith(alias.toLowerCase() + " ")) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return commandMap.containsKey(commandName);
     }
 }
