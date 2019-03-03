@@ -59,12 +59,7 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
             return false;
         }
 
-        if ((i + 1) >= args.length - 1) {
-            args = new String[0];
-        } else {
-            args = Arrays.copyOfRange(args, i + 1, args.length - 1);
-        }
-
+        args = Arrays.copyOfRange(args, i, args.length);
 
         if (!command.getSubCommands().isEmpty() && args.length >= 1) {
             ICommand subCommandFound;
@@ -80,6 +75,8 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
                 }
             }
 
+            i = 0;
+
             while (!subCommands.containsKey(subCommandLabel) && i < args.length) {
                 subCommandLabel = args[i];
                 i++;
@@ -87,11 +84,7 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
 
             subCommandFound = subCommands.get(subCommandLabel);
 
-            if ((i + 1) >= args.length - 1) {
-                subCommandArgs = new String[0];
-            } else {
-                subCommandArgs = Arrays.copyOfRange(args, i + 1, args.length - 1);
-            }
+            subCommandArgs = Arrays.copyOfRange(args, i, args.length);
 
             if (subCommandFound != null) {
                 command = subCommandFound;
@@ -154,12 +147,7 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
             return new ArrayList<>();
         }
 
-        if ((i + 1) >= args.length - 1) {
-            args = new String[0];
-        } else {
-            args = Arrays.copyOfRange(args, i + 1, args.length - 1);
-        }
-
+        args = Arrays.copyOfRange(args, i, args.length);
 
         if (!command.getSubCommands().isEmpty() && args.length >= 1) {
             ICommand subCommandFound;
@@ -175,6 +163,8 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
                 }
             }
 
+            i = 0;
+
             while (!subCommands.containsKey(subCommandLabel) && i < args.length) {
                 subCommandLabel = args[i];
                 i++;
@@ -182,11 +172,7 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
 
             subCommandFound = subCommands.get(subCommandLabel);
 
-            if ((i + 1) >= args.length - 1) {
-                subCommandArgs = new String[0];
-            } else {
-                subCommandArgs = Arrays.copyOfRange(args, i + 1, args.length - 1);
-            }
+            subCommandArgs = Arrays.copyOfRange(args, i, args.length);
 
             if (subCommandFound != null) {
                 command = subCommandFound;
