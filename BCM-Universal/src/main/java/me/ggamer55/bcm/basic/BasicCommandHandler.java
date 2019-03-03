@@ -44,56 +44,17 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
 
     @Override
     public boolean dispatchCommand(Namespace namespace, String commandLine) throws CommandException, NoPermissionsException, CommandUsageException, ArgumentsParseException {
-        String[] args = commandLine.split(" ");
-        String label = "";
+        Optional<CommandSearchResult> result = getCommandFromCommandLine(commandLine);
 
-        int i = 0;
-        while (!commandMap.containsKey(label) && i < args.length) {
-            label = args[i];
-            i++;
-        }
-
-        ICommand command = commandMap.get(label);
-
-        if (command == null) {
+        if (!result.isPresent()) {
             return false;
         }
 
-        args = Arrays.copyOfRange(args, i, args.length);
+        CommandSearchResult searchResult = result.get();
 
-        if (!command.getSubCommands().isEmpty() && args.length >= 1) {
-            ICommand subCommandFound;
-            String[] subCommandArgs;
-
-            String subCommandLabel = "";
-
-            Map<String, ICommand> subCommands = new HashMap<>();
-
-            for (ICommand subCommand : command.getSubCommands()) {
-                for (String name : subCommand.getNames()) {
-                    subCommands.put(name, subCommand);
-                }
-            }
-
-            i = 0;
-
-            while (!subCommands.containsKey(subCommandLabel) && i < args.length) {
-                subCommandLabel = args[i];
-                i++;
-            }
-
-            subCommandFound = subCommands.get(subCommandLabel);
-
-            subCommandArgs = Arrays.copyOfRange(args, i, args.length);
-
-            if (subCommandFound != null) {
-                command = subCommandFound;
-
-                args = subCommandArgs;
-
-                label = label + " " + subCommandLabel;
-            }
-        }
+        String[] args = searchResult.getNewArguments();
+        String label = searchResult.getLabel();
+        ICommand command = searchResult.getCommand();
 
         if (!command.getPermission().trim().isEmpty() && !authorizer.isAuthorized(namespace, command.getPermission())) {
             throw new NoPermissionsException(command.getPermissionMessage());
@@ -132,56 +93,17 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
 
     @Override
     public List<String> getCommandSuggestions(Namespace namespace, String commandLine) throws CommandException, NoMoreArgumentsException, NoPermissionsException {
-        String[] args = commandLine.split(" ");
-        String label = "";
+        Optional<CommandSearchResult> result = getCommandFromCommandLine(commandLine);
 
-        int i = 0;
-        while (!commandMap.containsKey(label) && i < args.length) {
-            label = args[i];
-            i++;
-        }
-
-        ICommand command = commandMap.get(label);
-
-        if (command == null) {
+        if (!result.isPresent()) {
             return new ArrayList<>();
         }
 
-        args = Arrays.copyOfRange(args, i, args.length);
+        CommandSearchResult searchResult = result.get();
 
-        if (!command.getSubCommands().isEmpty() && args.length >= 1) {
-            ICommand subCommandFound;
-            String[] subCommandArgs;
-
-            String subCommandLabel = "";
-
-            Map<String, ICommand> subCommands = new HashMap<>();
-
-            for (ICommand subCommand : command.getSubCommands()) {
-                for (String name : subCommand.getNames()) {
-                    subCommands.put(name, subCommand);
-                }
-            }
-
-            i = 0;
-
-            while (!subCommands.containsKey(subCommandLabel) && i < args.length) {
-                subCommandLabel = args[i];
-                i++;
-            }
-
-            subCommandFound = subCommands.get(subCommandLabel);
-
-            subCommandArgs = Arrays.copyOfRange(args, i, args.length);
-
-            if (subCommandFound != null) {
-                command = subCommandFound;
-
-                args = subCommandArgs;
-
-                label = label + " " + subCommandLabel;
-            }
-        }
+        String[] args = searchResult.getNewArguments();
+        String label = searchResult.getLabel();
+        ICommand command = searchResult.getCommand();
 
         if (!command.getPermission().trim().isEmpty() && !authorizer.isAuthorized(namespace, command.getPermission())) {
             throw new NoPermissionsException(command.getPermissionMessage());
@@ -226,7 +148,82 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
     }
 
     @Override
+    public Optional<CommandSearchResult> getCommandFromCommandLine(String commandLine) {
+        String[] args = commandLine.split(" ");
+        String label = "";
+
+        int i = 0;
+        while (!commandMap.containsKey(label) && i < args.length) {
+            label = args[i];
+            i++;
+        }
+
+        ICommand command = commandMap.get(label);
+
+        if (command == null) {
+            return Optional.empty();
+        }
+
+        args = Arrays.copyOfRange(args, i, args.length);
+
+        if (!command.getSubCommands().isEmpty() && args.length >= 1) {
+            ICommand subCommandFound;
+            String[] subCommandArgs;
+
+            String subCommandLabel = "";
+
+            Map<String, ICommand> subCommands = new HashMap<>();
+
+            for (ICommand subCommand : command.getSubCommands()) {
+                for (String name : subCommand.getNames()) {
+                    subCommands.put(name, subCommand);
+                }
+            }
+
+            i = 0;
+
+            while (!subCommands.containsKey(subCommandLabel) && i < args.length) {
+                subCommandLabel = args[i];
+                i++;
+            }
+
+            subCommandFound = subCommands.get(subCommandLabel);
+
+            subCommandArgs = Arrays.copyOfRange(args, i, args.length);
+
+            if (subCommandFound != null) {
+                command = subCommandFound;
+
+                args = subCommandArgs;
+
+                label = label + " " + subCommandLabel;
+            }
+        }
+
+        return Optional.of(fromValues(command, args, label));
+    }
+
+    @Override
     public boolean isCommandRegistered(String commandName) {
         return commandMap.containsKey(commandName);
+    }
+
+    private CommandSearchResult fromValues(ICommand command, String[] args, String label) {
+        return new CommandSearchResult() {
+            @Override
+            public ICommand getCommand() {
+                return command;
+            }
+
+            @Override
+            public String[] getNewArguments() {
+                return args;
+            }
+
+            @Override
+            public String getLabel() {
+                return label;
+            }
+        };
     }
 }
