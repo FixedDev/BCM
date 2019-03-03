@@ -19,5 +19,7 @@ public interface CommandRegistry {
         ICommand getCommand();
 
         String[] getNewArguments();
+
+        String getLabel();
     }
 }
