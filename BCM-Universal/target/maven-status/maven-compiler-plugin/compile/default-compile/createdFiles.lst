@@ -24,6 +24,7 @@ me\ggamer55\bcm\parametric\providers\StringParameterProvider.class
 me\ggamer55\bcm\basic\Namespace.class
 me\ggamer55\bcm\parametric\annotation\Optional.class
 me\ggamer55\bcm\AbstractAdvancedCommand.class
+me\ggamer55\bcm\basic\CommandRegistry$CommandSearchResult.class
 me\ggamer55\bcm\parametric\ParametricCommandHandler$2.class
 me\ggamer55\bcm\parametric\ParametricCommandHandler$4.class
 me\ggamer55\bcm\parametric\providers\BooleanProvider.class
@@ -31,6 +32,7 @@ me\ggamer55\bcm\basic\Authorizer.class
 me\ggamer55\bcm\basic\CommandDispatcher.class
 me\ggamer55\bcm\parametric\ParametricCommandRegistry.class
 me\ggamer55\bcm\parametric\providers\NamespaceProvider.class
+me\ggamer55\bcm\basic\BasicCommandHandler$1.class
 me\ggamer55\bcm\basic\ArgumentArray.class
 me\ggamer55\bcm\parametric\exceptions\NoTransformerFound.class
 me\ggamer55\bcm\basic\CommandRegistry.class
