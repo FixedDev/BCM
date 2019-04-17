@@ -19,13 +19,15 @@ import java.util.logging.Logger;
 public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
 
     private final Authorizer authorizer;
+    private final PermissionMessageProvider messageProvider;
 
     private Map<String, ICommand> commandMap;
 
     protected Logger logger;
 
-    public BasicCommandHandler(Authorizer authorizer, Logger logger) {
+    public BasicCommandHandler(Authorizer authorizer, PermissionMessageProvider messageProvider, Logger logger) {
         this.authorizer = authorizer;
+        this.messageProvider = messageProvider == null ? new NoOpPermissionMessageProvider() : messageProvider;
 
         commandMap = new ConcurrentHashMap<>();
 
@@ -35,6 +37,11 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
     @Override
     public Authorizer getAuthorizer() {
         return authorizer;
+    }
+
+    @Override
+    public PermissionMessageProvider getPermissionMessageProvider() {
+        return messageProvider;
     }
 
     @Override
@@ -57,7 +64,11 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
         ICommand command = searchResult.getCommand();
 
         if (!command.getPermission().trim().isEmpty() && !authorizer.isAuthorized(namespace, command.getPermission())) {
-            throw new NoPermissionsException(command.getPermissionMessage());
+            if (!command.isPermissionMessageOverride()) {
+                throw new NoPermissionsException(command.getPermissionMessage());
+            }
+
+            throw new NoPermissionsException(getPermissionMessageProvider().getMessage(command, namespace));
         }
 
         ArgumentArray arguments = new ArgumentArray(args);
