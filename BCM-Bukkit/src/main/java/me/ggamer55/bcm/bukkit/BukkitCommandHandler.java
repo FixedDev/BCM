@@ -1,6 +1,7 @@
 package me.ggamer55.bcm.bukkit;
 
 import me.ggamer55.bcm.basic.ICommand;
+import me.ggamer55.bcm.basic.PermissionMessageProvider;
 import me.ggamer55.bcm.bukkit.providers.CommandSenderProvider;
 import me.ggamer55.bcm.bukkit.providers.OfflinePlayerProvider;
 import me.ggamer55.bcm.bukkit.providers.PlayerProvider;
@@ -22,8 +23,8 @@ public class BukkitCommandHandler extends ParametricCommandHandler {
 
     private CommandMap commandMap;
 
-    public BukkitCommandHandler(Logger logger) {
-        super(new CommandSenderAuthorizer(), logger);
+    public BukkitCommandHandler(Logger logger, PermissionMessageProvider messageProvider) {
+        super(new CommandSenderAuthorizer(), messageProvider, logger);
 
         registerParameterTransfomer(CommandSender.class, new CommandSenderProvider());
         registerParameterTransfomer(OfflinePlayer.class, new OfflinePlayerProvider());
