@@ -28,6 +28,10 @@ public interface ICommand {
         return "No Permission.";
     }
 
+    default boolean isPermissionMessageOverride() {
+        return false;
+    }
+
     List<ICommand> getSubCommands();
 
     boolean run(Namespace namespace, ArgumentArray arguments) throws CommandException, NoPermissionsException, NoMoreArgumentsException, ArgumentsParseException;
