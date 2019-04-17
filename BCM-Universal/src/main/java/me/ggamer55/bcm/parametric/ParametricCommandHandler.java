@@ -25,7 +25,7 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
 
     private Map<Class<?>, ParameterProvider> parameterTransformerMap;
 
-    public ParametricCommandHandler(Authorizer authorizer,PermissionMessageProvider messageProvider, Logger logger) {
+    public ParametricCommandHandler(Authorizer authorizer, PermissionMessageProvider messageProvider, Logger logger) {
         super(authorizer, messageProvider,logger);
 
         parameterTransformerMap = new ConcurrentHashMap<>();
