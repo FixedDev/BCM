@@ -166,7 +166,7 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
 
         args = Arrays.copyOfRange(args, i, args.length);
 
-        if (!command.getSubCommands().isEmpty() && args.length >= 1) {
+        while (!command.getSubCommands().isEmpty() && args.length >= 1) {
             ICommand subCommandFound;
             String[] subCommandArgs;
 
