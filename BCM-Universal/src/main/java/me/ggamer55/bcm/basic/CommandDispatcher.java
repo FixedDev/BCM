@@ -11,6 +11,8 @@ import java.util.List;
 public interface CommandDispatcher {
     Authorizer getAuthorizer();
 
+    PermissionMessageProvider getPermissionMessageProvider();
+
     CommandRegistry getRegistry();
 
     boolean dispatchCommand(Namespace namespace, String command) throws CommandException, NoPermissionsException, CommandUsageException, ArgumentsParseException;
