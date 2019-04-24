@@ -12,7 +12,6 @@
     <modules>
         <module>BCM-Universal</module>
         <module>BCM-Bukkit</module>
-        <module>BukkitTest</module>
     </modules>
 
     <properties>
