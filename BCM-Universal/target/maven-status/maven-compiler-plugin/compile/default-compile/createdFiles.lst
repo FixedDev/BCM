@@ -1,6 +1,8 @@
 me\ggamer55\bcm\basic\exceptions\NoMoreArgumentsException.class
 me\ggamer55\bcm\basic\exceptions\NoPermissionsException.class
 me\ggamer55\bcm\parametric\ParametricCommandHandler.class
+me\ggamer55\bcm\basic\NoOpPermissionMessageProvider.class
+me\ggamer55\bcm\basic\PermissionMessageProvider.class
 me\ggamer55\bcm\basic\BasicCommandHandler.class
 me\ggamer55\bcm\parametric\annotation\Command.class
 me\ggamer55\bcm\parametric\ParametricCommandHandler$1.class

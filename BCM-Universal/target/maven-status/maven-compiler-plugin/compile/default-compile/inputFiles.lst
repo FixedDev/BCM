@@ -4,6 +4,7 @@ D:\Workspace\Network\BCM\BCM-Universal\src\main\java\me\ggamer55\bcm\AbstractAdv
 D:\Workspace\Network\BCM\BCM-Universal\src\main\java\me\ggamer55\bcm\basic\exceptions\CommandUsageException.java
 D:\Workspace\Network\BCM\BCM-Universal\src\main\java\me\ggamer55\bcm\basic\ArgumentArray.java
 D:\Workspace\Network\BCM\BCM-Universal\src\main\java\me\ggamer55\bcm\CommandContext.java
+D:\Workspace\Network\BCM\BCM-Universal\src\main\java\me\ggamer55\bcm\basic\PermissionMessageProvider.java
 D:\Workspace\Network\BCM\BCM-Universal\src\main\java\me\ggamer55\bcm\basic\CommandRegistry.java
 D:\Workspace\Network\BCM\BCM-Universal\src\main\java\me\ggamer55\bcm\basic\exceptions\NoPermissionsException.java
 D:\Workspace\Network\BCM\BCM-Universal\src\main\java\me\ggamer55\bcm\basic\BasicCommandHandler.java
@@ -13,6 +14,7 @@ D:\Workspace\Network\BCM\BCM-Universal\src\main\java\me\ggamer55\bcm\parametric\
 D:\Workspace\Network\BCM\BCM-Universal\src\main\java\me\ggamer55\bcm\parametric\ParametricCommandHandler.java
 D:\Workspace\Network\BCM\BCM-Universal\src\main\java\me\ggamer55\bcm\parametric\ParametricCommandRegistry.java
 D:\Workspace\Network\BCM\BCM-Universal\src\main\java\me\ggamer55\bcm\parametric\exceptions\NoTransformerFound.java
+D:\Workspace\Network\BCM\BCM-Universal\src\main\java\me\ggamer55\bcm\basic\NoOpPermissionMessageProvider.java
 D:\Workspace\Network\BCM\BCM-Universal\src\main\java\me\ggamer55\bcm\basic\CommandDispatcher.java
 D:\Workspace\Network\BCM\BCM-Universal\src\main\java\me\ggamer55\bcm\parametric\annotation\Parameter.java
 D:\Workspace\Network\BCM\BCM-Universal\src\main\java\me\ggamer55\bcm\basic\exceptions\NoMoreArgumentsException.java

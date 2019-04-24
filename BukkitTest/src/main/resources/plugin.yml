@@ -1,3 +1,0 @@
-name: BCMTest
-version: ${pom.version}
-main: me.ggamer55.bcm.bukkit.TestPlugin
