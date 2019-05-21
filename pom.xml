@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>BCM</artifactId>
-    <groupId>us.sparknetwork</groupId>
-    <version>1.5</version>
+    <groupId>me.fixeddev</groupId>
+    <version>1.6</version>
 
     <packaging>pom</packaging>
     <modules>
