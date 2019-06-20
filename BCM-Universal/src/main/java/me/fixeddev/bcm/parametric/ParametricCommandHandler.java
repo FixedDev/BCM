@@ -367,13 +367,12 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
             }
             throw new IllegalStateException("Failed to register parameter transformer for class " + clazz.getName() + " and annotation " + annotation.getName() + ", there's already a registered parameter transformer!");
         }
-        parameterTransformers.computeIfAbsent(clazz, aClass -> new ConcurrentHashMap<>()).put(annotation, parameterProvider);
+        parameterTransformers.computeIfAbsent(clazz, aClass -> new HashMap<>()).put(annotation, parameterProvider);
     }
 
     @Override
     public <T> boolean hasRegisteredTransformer(@NotNull Class<T> clazz, Class<?> annotationType) {
-        return parameterTransformers.containsKey(clazz) ||
-                parameterTransformers.computeIfAbsent(clazz, aClass -> new ConcurrentHashMap<>()).containsKey(annotationType);
+        return parameterTransformers.computeIfAbsent(clazz, aClass -> new HashMap<>()).size() > 0;
     }
 
 
@@ -386,6 +385,6 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
     @Override
     @SuppressWarnings("unchecked")
     public <T> ParameterProvider<T> getParameterTransformer(@NotNull Class<T> clazz, @Nullable Class<?> annotationType) {
-        return (ParameterProvider<T>) parameterTransformers.computeIfAbsent(clazz, aClass -> new ConcurrentHashMap<>()).get(annotationType);
+        return (ParameterProvider<T>) parameterTransformers.computeIfAbsent(clazz, aClass -> new HashMap<>()).get(annotationType);
     }
 }
