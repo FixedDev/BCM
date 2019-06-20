@@ -11,7 +11,15 @@ public interface ParametricCommandRegistry extends CommandRegistry {
 
     <T> ParameterProvider<T> getParameterTransformer(Class<T> clazz);
 
-    <T> void registerParameterTransfomer(Class<T> clazz, ParameterProvider<T> parameterProvider);
+    default <T> void registerParameterTransfomer(Class<T> clazz, ParameterProvider<T> parameterProvider) {
+        registerParameterTransformer(clazz, null, parameterProvider);
+    }
 
-    <T> boolean hasRegisteredTransformer(Class<T> clazz);
+    <T> void registerParameterTransformer(Class<T> clazz, Class<?> annotationType, ParameterProvider<T> parameterProvider);
+
+    default <T> boolean hasRegisteredTransformer(Class<T> clazz) {
+        return hasRegisteredTransformer(clazz, null);
+    }
+
+    <T> boolean hasRegisteredTransformer(Class<T> clazz, Class<?> annotationType);
 }
