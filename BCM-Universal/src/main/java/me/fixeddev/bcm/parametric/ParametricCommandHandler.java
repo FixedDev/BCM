@@ -6,6 +6,7 @@ import me.fixeddev.bcm.basic.Namespace;
 import me.fixeddev.bcm.basic.PermissionMessageProvider;
 import me.fixeddev.bcm.basic.exceptions.CommandException;
 import me.fixeddev.bcm.basic.exceptions.NoMoreArgumentsException;
+import me.fixeddev.bcm.parametric.annotation.JoinedString;
 import me.fixeddev.bcm.parametric.providers.BooleanProvider;
 import me.fixeddev.bcm.AbstractAdvancedCommand;
 import me.fixeddev.bcm.AdvancedCommand;
@@ -18,6 +19,7 @@ import me.fixeddev.bcm.parametric.annotation.Command;
 import me.fixeddev.bcm.parametric.annotation.Parameter;
 import me.fixeddev.bcm.parametric.providers.DoubleProvider;
 import me.fixeddev.bcm.parametric.providers.IntegerProvider;
+import me.fixeddev.bcm.parametric.providers.JoinedStringProvider;
 import me.fixeddev.bcm.parametric.providers.NamespaceProvider;
 import me.fixeddev.bcm.parametric.providers.StringParameterProvider;
 import org.jetbrains.annotations.NotNull;
@@ -44,6 +46,7 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
 
         registerParameterTransfomer(Namespace.class, new NamespaceProvider());
         registerParameterTransfomer(String.class, new StringParameterProvider());
+        registerParameterTransformer(String.class, JoinedString.class, new JoinedStringProvider());
 
         registerParameterTransfomer(boolean.class, new BooleanProvider());
         registerParameterTransfomer(Boolean.class, new BooleanProvider());
