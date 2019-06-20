@@ -38,7 +38,6 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
 
     private Map<Class<?>, Map<Class<?>, ParameterProvider>> parameterTransformers;
 
-
     public ParametricCommandHandler(Authorizer authorizer, PermissionMessageProvider messageProvider, Logger logger) {
         super(authorizer, messageProvider, logger);
 
@@ -373,7 +372,8 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
 
     @Override
     public <T> boolean hasRegisteredTransformer(@NotNull Class<T> clazz, Class<?> annotationType) {
-        return parameterTransformers.containsKey(clazz) || parameterTransformers.get(clazz).containsKey(annotationType);
+        return parameterTransformers.containsKey(clazz) ||
+                (annotationType != null && parameterTransformers.computeIfAbsent(clazz, aClass -> new ConcurrentHashMap<>()).containsKey(annotationType));
     }
 
 
