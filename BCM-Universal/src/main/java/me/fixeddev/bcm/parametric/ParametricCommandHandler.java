@@ -20,6 +20,8 @@ import me.fixeddev.bcm.parametric.providers.DoubleProvider;
 import me.fixeddev.bcm.parametric.providers.IntegerProvider;
 import me.fixeddev.bcm.parametric.providers.NamespaceProvider;
 import me.fixeddev.bcm.parametric.providers.StringParameterProvider;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -32,12 +34,13 @@ import java.util.stream.Collectors;
 
 public class ParametricCommandHandler extends BasicCommandHandler implements ParametricCommandRegistry {
 
-    private Map<Class<?>, ParameterProvider> parameterTransformerMap;
+    private Map<Class<?>, Map<Class<?>, ParameterProvider>> parameterTransformers;
+
 
     public ParametricCommandHandler(Authorizer authorizer, PermissionMessageProvider messageProvider, Logger logger) {
-        super(authorizer, messageProvider,logger);
+        super(authorizer, messageProvider, logger);
 
-        parameterTransformerMap = new ConcurrentHashMap<>();
+        parameterTransformers = new ConcurrentHashMap<>();
 
         registerParameterTransfomer(Namespace.class, new NamespaceProvider());
         registerParameterTransfomer(String.class, new StringParameterProvider());
@@ -60,7 +63,7 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
         Method[] clazzMethods = clazz.getDeclaredMethods();
 
         if (clazzMethods.length == 0) {
-            logger.log(Level.WARNING, "The class {0} doesn't have any methods.", clazz.getName());
+            logger.log(Level.WARNING, "The class {0} doesn''t have any methods.", clazz.getName());
             return;
         }
 
@@ -80,11 +83,11 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
                     Optional<ICommand> command = getCommand(aliasParts[0]);
 
                     if (command.isPresent() && !(command.get() instanceof AdvancedCommand)) {
-                        logger.log(Level.SEVERE, "The parent command {0} can't be registered because a command with the same name is already registered!", aliasParts[0]);
+                        logger.log(Level.SEVERE, "The parent command {0} can''t be registered because a command with the same name is already registered!", aliasParts[0]);
                         continue;
                     }
 
-                    AdvancedCommand parentCommand = (AdvancedCommand) command.orElse(_getParentCommand(aliasParts, callable));
+                    AdvancedCommand parentCommand = (AdvancedCommand) command.orElse(getParentCommand(aliasParts, callable));
 
                     if (!isCommandRegistered(aliasParts[0])) {
                         registerCommand(parentCommand);
@@ -98,14 +101,14 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
                         }
 
                         if (i == (aliasParts.length - 1)) {
-                            AdvancedCommand subCommand = _getCommandWrapper(aliasPart, callable);
+                            AdvancedCommand subCommand = getCommandWrapper(aliasPart, callable);
 
                             parentCommand.registerSubCommand(subCommand);
 
                             continue;
                         }
 
-                        AdvancedCommand subCommand = _getSubCommand(aliasPart, callable);
+                        AdvancedCommand subCommand = getSubCommand(aliasPart, callable);
 
                         parentCommand.registerSubCommand(subCommand);
 
@@ -123,7 +126,8 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
         }
     }
 
-    private AdvancedCommand _getParentCommand(String[] aliasParts, AdvancedCommand callable) {
+
+    private AdvancedCommand getParentCommand(String[] aliasParts, AdvancedCommand callable) {
         return new AbstractAdvancedCommand(
                 new String[]{aliasParts[0]},
                 "/<command> <subcommand>",
@@ -170,7 +174,7 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
         };
     }
 
-    private AdvancedCommand _getSubCommand(String name, AdvancedCommand callable) {
+    private AdvancedCommand getSubCommand(String name, AdvancedCommand callable) {
         return new AbstractAdvancedCommand(
                 new String[]{name},
                 callable.getUsage(),
@@ -212,7 +216,7 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
         };
     }
 
-    private AdvancedCommand _getCommandWrapper(String name, AdvancedCommand callable) {
+    private AdvancedCommand getCommandWrapper(String name, AdvancedCommand callable) {
         return new AbstractAdvancedCommand(
                 new String[]{name},
                 callable.getUsage(),
@@ -247,7 +251,7 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
 
         if (clazzMethod.getReturnType() != boolean.class
                 && clazzMethod.getReturnType() != Boolean.class) {
-            logger.log(Level.WARNING, "The method {0} doesn't return boolean or Boolean", clazzMethod.getName());
+            logger.log(Level.WARNING, "The method {0} doesn''t return boolean or Boolean", clazzMethod.getName());
             return null;
         }
 
@@ -271,15 +275,12 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
 
             parametersData.add(parameterData);
         }
-        ParametricCommandExecutor callable = new ParametricCommandExecutor(commandClass, command, parametersData, this, clazzMethod);
 
-        return callable;
+        return new ParametricCommandExecutor(commandClass, command, parametersData, this, clazzMethod);
     }
 
-    protected ParameterData getParameterData(Method clazzMethod, Class<?> parameterType, Annotation[] annotations) {
+    protected ParameterData getParameterData(Method clazzMethod, Class<?> type, Annotation[] annotations) {
         List<Annotation> modifiers = new ArrayList<>();
-
-        Class<?> type = parameterType;
 
         if (type == CommandContext.class) {
             return new ParameterData(type, new Parameter() {
@@ -307,7 +308,7 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
             if (annotation instanceof Parameter) {
                 param = (Parameter) annotation;
             }
-            if(annotation instanceof me.fixeddev.bcm.parametric.annotation.Optional){
+            if (annotation instanceof me.fixeddev.bcm.parametric.annotation.Optional) {
                 optional = (me.fixeddev.bcm.parametric.annotation.Optional) annotation;
             }
             modifiers.add(annotation);
@@ -333,7 +334,7 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
         }
 
         if (param.isFlag() && (type != Boolean.class && type != boolean.class)) {
-            logger.log(Level.WARNING, "The method {0} of class {1} has a flag parameter but the type isn't boolean.", new Object[]{clazzMethod.getDeclaringClass().getName(), clazzMethod.getName()});
+            logger.log(Level.WARNING, "The method {0} of class {1} has a flag parameter but the type isn''t boolean.", new Object[]{clazzMethod.getDeclaringClass().getName(), clazzMethod.getName()});
 
             return null;
         }
@@ -357,27 +358,31 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
     }
 
     @Override
-    public Map<Class<?>, ParameterProvider> getRegisteredParameterTransformers() {
-        return new HashMap<>(parameterTransformerMap);
+    public <T> void registerParameterTransformer(@NotNull Class<T> clazz, Class<?> annotation, @NotNull ParameterProvider<T> parameterProvider) {
+        if (!hasRegisteredTransformer(clazz, annotation)) {
+            if (annotation == null) {
+                throw new IllegalStateException("Failed to register parameter transformer for class " + clazz.getName() + ", there's already a registered parameter transformer!");
+            }
+            throw new IllegalStateException("Failed to register parameter transformer for class " + clazz.getName() + " and annotation " + annotation.getName() + ", there's already a registered parameter transformer!");
+        }
+        parameterTransformers.computeIfAbsent(clazz, aClass -> new ConcurrentHashMap<>()).put(annotation, parameterProvider);
+    }
+
+    @Override
+    public <T> boolean hasRegisteredTransformer(@NotNull Class<T> clazz, Class<?> annotationType) {
+        return parameterTransformers.containsKey(clazz) || parameterTransformers.get(clazz).containsKey(annotationType);
+    }
+
+
+    @NotNull
+    @Override
+    public Map<Class<?>, Map<Class<?>, ParameterProvider>> getRegisteredParameterTransformers() {
+        return parameterTransformers;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> ParameterProvider<T> getParameterTransformer(Class<T> clazz) {
-        return parameterTransformerMap.get(clazz);
-    }
-
-    @Override
-    public <T> void registerParameterTransfomer(Class<T> clazz, ParameterProvider<T> parameterProvider) {
-        if (hasRegisteredTransformer(clazz)) {
-            throw new IllegalStateException("Failed to register parameter transformer for class " + clazz.getName() + ", there's already a registered parameter transformer!");
-        }
-
-        parameterTransformerMap.put(clazz, parameterProvider);
-    }
-
-    @Override
-    public <T> boolean hasRegisteredTransformer(Class<T> clazz) {
-        return parameterTransformerMap.containsKey(clazz);
+    public <T> ParameterProvider<T> getParameterTransformer(@NotNull Class<T> clazz, @Nullable Class<?> annotationType) {
+        return (ParameterProvider<T>) parameterTransformers.computeIfAbsent(clazz, aClass -> new ConcurrentHashMap<>()).get(annotationType);
     }
 }
