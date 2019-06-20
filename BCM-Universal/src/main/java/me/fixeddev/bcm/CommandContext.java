@@ -50,12 +50,22 @@ public class CommandContext {
                 if (argument.startsWith("-")) {
                     argument = argument.substring(1);
 
+                    StringBuilder newArgument = new StringBuilder().append("-");
+
                     if (argument.length() >= 1) {
                         for (char c : argument.toCharArray()) {
                             if (expectedFlags.contains(c) || anyFlagsAllowed) {
                                 actualFlags.add(c);
+                                continue;
                             }
+                            newArgument.append(c);
                         }
+                    }
+
+                    String newArgumentString = newArgument.toString();
+
+                    if(!newArgumentString.isEmpty()){
+                        parsedArguments.add(newArgumentString);
                     }
 
                     continue;
