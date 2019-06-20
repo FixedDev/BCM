@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class PlayerProvider implements ParameterProvider<Player> {
     @Override
-    public Player transformParameter(ArgumentStack arguments, Namespace namespace, List<Annotation> modifiers, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException {
+    public Player transformParameter(ArgumentStack arguments, Namespace namespace, Annotation modifier, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException {
         if (arguments.hasNext()) {
             String next = arguments.next();
 

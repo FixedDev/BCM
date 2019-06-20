@@ -8,11 +8,10 @@ import me.fixeddev.bcm.parametric.ParameterProvider;
 import org.bukkit.command.CommandSender;
 
 import java.lang.annotation.Annotation;
-import java.util.List;
 
 public class CommandSenderProvider implements ParameterProvider<CommandSender> {
     @Override
-    public CommandSender transformParameter(ArgumentStack arguments, Namespace namespace, List<Annotation> modifiers, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException {
+    public CommandSender transformParameter(ArgumentStack arguments, Namespace namespace, Annotation modifiers, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException {
         return namespace.getObject(CommandSender.class, "sender");
     }
 }

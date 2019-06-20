@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class OfflinePlayerProvider implements ParameterProvider<OfflinePlayer> {
     @Override
-    public OfflinePlayer transformParameter(ArgumentStack arguments, Namespace namespace, List<Annotation> modifiers, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException {
+    public OfflinePlayer transformParameter(ArgumentStack arguments, Namespace namespace, Annotation modifier, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException {
         if (arguments.hasNext()) {
             String next = arguments.next();
 
