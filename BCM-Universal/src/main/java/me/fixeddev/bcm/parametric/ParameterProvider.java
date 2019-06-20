@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface ParameterProvider<T> {
-    T transformParameter(ArgumentStack arguments, Namespace namespace, List<Annotation> modifiers, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException;
+    T transformParameter(ArgumentStack arguments, Namespace namespace, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException;
 
     default List<String> getSuggestions(String text, Namespace namespace){
         return new ArrayList<>();
