@@ -373,7 +373,7 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
     @Override
     public <T> boolean hasRegisteredTransformer(@NotNull Class<T> clazz, Class<?> annotationType) {
         return parameterTransformers.containsKey(clazz) ||
-                (annotationType != null && parameterTransformers.computeIfAbsent(clazz, aClass -> new ConcurrentHashMap<>()).containsKey(annotationType));
+                parameterTransformers.computeIfAbsent(clazz, aClass -> new ConcurrentHashMap<>()).containsKey(annotationType);
     }
 
 
