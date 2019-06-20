@@ -11,7 +11,7 @@ import java.util.List;
 
 public class DoubleProvider implements ParameterProvider<Double> {
     @Override
-    public Double transformParameter(ArgumentStack arguments, Namespace namespace, List<Annotation> modifiers, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException {
+    public Double transformParameter(ArgumentStack arguments, Namespace namespace,Annotation annotation, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException {
         try {
             return arguments.nextDouble();
         } catch (ArgumentsParseException e) {

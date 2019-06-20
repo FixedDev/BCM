@@ -15,7 +15,7 @@ public class BooleanProvider implements ParameterProvider<Boolean> {
     private List<String> suggestions = Arrays.asList("true", "false");
 
     @Override
-    public Boolean transformParameter(ArgumentStack arguments, Namespace namespace, List<Annotation> modifiers, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException {
+    public Boolean transformParameter(ArgumentStack arguments, Namespace namespace, Annotation annotation, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException {
         try {
             return arguments.nextBoolean();
         } catch (ArgumentsParseException e) {
@@ -31,6 +31,7 @@ public class BooleanProvider implements ParameterProvider<Boolean> {
     public List<String> getSuggestions(String text, Namespace namespace) {
         return suggestions;
     }
+
     @Override
     public boolean isProvided() {
         return true;

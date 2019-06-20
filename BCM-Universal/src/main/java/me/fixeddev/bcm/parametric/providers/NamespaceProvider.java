@@ -11,7 +11,7 @@ import java.util.List;
 
 public class NamespaceProvider implements ParameterProvider<Namespace> {
     @Override
-    public Namespace transformParameter(ArgumentStack arguments, Namespace namespace, List<Annotation> modifiers, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException {
+    public Namespace transformParameter(ArgumentStack arguments, Namespace namespace,Annotation annotation, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException {
         return namespace;
     }
 

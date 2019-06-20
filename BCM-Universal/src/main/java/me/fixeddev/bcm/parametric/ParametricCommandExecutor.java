@@ -145,14 +145,14 @@ class ParametricCommandExecutor implements AdvancedCommand {
 
             ParameterProvider transformer = registry.getParameterTransformer(type, firstAnnotation.annotationType());
 
-            if(transformer == null){
+            if (transformer == null) {
                 transformer = registry.getParameterTransformer(type);
             }
 
             Object object;
 
             try {
-                object = transformer.transformParameter(argumentStack, context.getNamespace(), data.getModifiers(), data.getDefaultValue());
+                object = transformer.transformParameter(argumentStack, context.getNamespace(), firstAnnotation, data.getDefaultValue());
             } catch (NoMoreArgumentsException e) {
                 throw new CommandException(e);
             }

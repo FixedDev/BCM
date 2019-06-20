@@ -11,7 +11,7 @@ import java.util.List;
 
 public class IntegerProvider implements ParameterProvider<Integer> {
     @Override
-    public Integer transformParameter(ArgumentStack arguments, Namespace namespace, List<Annotation> modifiers, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException {
+    public Integer transformParameter(ArgumentStack arguments, Namespace namespace, Annotation annotation, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException {
         try {
             return arguments.nextInt();
         } catch (ArgumentsParseException e) {
