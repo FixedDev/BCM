@@ -12,6 +12,7 @@ import me.fixeddev.bcm.basic.exceptions.ArgumentsParseException;
 import me.fixeddev.bcm.parametric.annotation.Command;
 import me.fixeddev.bcm.parametric.exceptions.NoTransformerFound;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -122,6 +123,8 @@ class ParametricCommandExecutor implements AdvancedCommand {
         for (ParameterData data : parameters) {
             String name = data.getName();
             Class<?> type = data.getType();
+            Annotation firstAnnotation = data.getModifiers().get(0);
+
             boolean isFlag = data.isFlag();
 
             if (isFlag) {
@@ -140,7 +143,12 @@ class ParametricCommandExecutor implements AdvancedCommand {
                 throw new CommandException(new NoTransformerFound(type));
             }
 
-            ParameterProvider transformer = registry.getParameterTransformer(type);
+            ParameterProvider transformer = registry.getParameterTransformer(type, firstAnnotation.annotationType());
+
+            if(transformer == null){
+                transformer = registry.getParameterTransformer(type);
+            }
+
             Object object;
 
             try {
