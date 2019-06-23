@@ -6,6 +6,7 @@ import me.fixeddev.bcm.basic.Namespace;
 import me.fixeddev.bcm.basic.PermissionMessageProvider;
 import me.fixeddev.bcm.basic.exceptions.CommandException;
 import me.fixeddev.bcm.basic.exceptions.NoMoreArgumentsException;
+import me.fixeddev.bcm.parametric.annotation.Flag;
 import me.fixeddev.bcm.parametric.annotation.JoinedString;
 import me.fixeddev.bcm.parametric.providers.BooleanProvider;
 import me.fixeddev.bcm.AbstractAdvancedCommand;
@@ -304,15 +305,28 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
         }
 
         Parameter param = null;
+
         me.fixeddev.bcm.parametric.annotation.Optional optional = emptyOptionalAnnotation();
 
         for (Annotation annotation : annotations) {
+            if (annotation instanceof Flag) {
+                param = FlagData.getFromFlag((Flag) annotation);
+
+                continue;
+            }
+
             if (annotation instanceof Parameter) {
                 param = (Parameter) annotation;
+
+                continue;
             }
+
             if (annotation instanceof me.fixeddev.bcm.parametric.annotation.Optional) {
                 optional = (me.fixeddev.bcm.parametric.annotation.Optional) annotation;
+
+                continue;
             }
+
             modifiers.add(annotation);
         }
 
@@ -339,6 +353,10 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
             logger.log(Level.WARNING, "The method {0} of class {1} has a flag parameter but the type isn''t boolean.", new Object[]{clazzMethod.getDeclaringClass().getName(), clazzMethod.getName()});
 
             return null;
+        }
+
+        if (param.isFlag()) {
+            return new FlagData(param, optional, modifiers);
         }
 
         return new ParameterData(type, param, optional, modifiers);
