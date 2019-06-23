@@ -17,7 +17,7 @@ class FlagData extends ParameterData {
         super(boolean.class, getFromFlag(parameter), optional, modifiers);
     }
 
-    static Parameter getFromFlag(Flag flag){
+    public static Parameter getFromFlag(Flag flag){
         return new Parameter() {
 
             @Override
