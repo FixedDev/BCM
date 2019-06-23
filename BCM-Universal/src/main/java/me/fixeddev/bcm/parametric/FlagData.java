@@ -8,6 +8,11 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 
 class FlagData extends ParameterData {
+
+    public FlagData(Parameter parameter, Optional optional, List<Annotation> modifiers) {
+        super(boolean.class, parameter, optional, modifiers);
+    }
+
     public FlagData(Flag parameter, Optional optional, List<Annotation> modifiers) {
         super(boolean.class, getFromFlag(parameter), optional, modifiers);
     }
