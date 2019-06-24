@@ -6,7 +6,7 @@
 
     <artifactId>BCM</artifactId>
     <groupId>me.fixeddev</groupId>
-    <version>1.7.1</version>
+    <version>1.7.2</version>
 
     <packaging>pom</packaging>
     <modules>
