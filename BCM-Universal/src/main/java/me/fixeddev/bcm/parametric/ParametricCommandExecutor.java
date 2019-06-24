@@ -132,7 +132,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
                 annotationType = firstAnnotation.annotationType();
             }
 
-            boolean isFlag = data.isFlag();
+            boolean isFlag = data instanceof FlagData;
 
             if (isFlag) {
                 arguments.add(context.getFlagValue(name.charAt(0)));
@@ -189,7 +189,9 @@ class ParametricCommandExecutor implements AdvancedCommand {
         int index = 0;
 
         for (ParameterData parameter : parameters) {
-            if (parameter.isFlag() || parameter.getType() == CommandContext.class) {
+            boolean isFlag = parameter instanceof FlagData;
+
+            if (isFlag || parameter.getType() == CommandContext.class) {
                 continue;
             }
 
