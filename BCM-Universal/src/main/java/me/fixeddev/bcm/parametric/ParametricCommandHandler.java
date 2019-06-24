@@ -80,46 +80,17 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
             boolean registeredSubCommands = false;
 
             for (String alias : callable.getNames()) {
-                String[] aliasParts = alias.split(" ");
+                CommandTreeResult treeResult = createCommandTree(callable, alias);
 
-                if (aliasParts.length > 1) {
-                    Optional<ICommand> command = getCommand(aliasParts[0]);
+                boolean commandPresent = treeResult.commandResult().isPresent();
+                boolean commandRegistered = isCommandRegistered(treeResult.commandResult().get().getNames()[0]);
 
-                    if (command.isPresent() && !(command.get() instanceof AdvancedCommand)) {
-                        logger.log(Level.SEVERE, "The parent command {0} can''t be registered because a command with the same name is already registered!", aliasParts[0]);
-                        continue;
-                    }
+                if (commandPresent && !commandRegistered){
+                    registerCommand(treeResult.commandResult().get());
+                }
 
-                    AdvancedCommand parentCommand = (AdvancedCommand) command.orElse(getParentCommand(aliasParts, callable));
-
-                    if (!isCommandRegistered(aliasParts[0])) {
-                        registerCommand(parentCommand);
-                    }
-
-                    for (int i = 0; i < aliasParts.length; i++) {
-                        String aliasPart = aliasParts[i];
-
-                        if (i == 0) {
-                            continue;
-                        }
-
-                        if (i == (aliasParts.length - 1)) {
-                            AdvancedCommand subCommand = getCommandWrapper(aliasPart, callable);
-
-                            parentCommand.registerSubCommand(subCommand);
-
-                            continue;
-                        }
-
-                        AdvancedCommand subCommand = getSubCommand(aliasPart, callable);
-
-                        parentCommand.registerSubCommand(subCommand);
-
-                        parentCommand = subCommand;
-
-                    }
-
-                    registeredSubCommands = true;
+                if(!registeredSubCommands){
+                    registeredSubCommands = treeResult.subCommandsRegistered();
                 }
             }
 
@@ -129,6 +100,99 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
         }
     }
 
+    @Override
+    public <T> void registerParameterTransformer(@NotNull Class<T> clazz, Class<?> annotation, @NotNull ParameterProvider<T> parameterProvider) {
+        if (hasRegisteredTransformer(clazz, annotation)) {
+            if (annotation == null) {
+                throw new IllegalStateException("Failed to register parameter transformer for class " + clazz.getName() + ", there's already a registered parameter transformer!");
+            }
+            throw new IllegalStateException("Failed to register parameter transformer for class " + clazz.getName() + " and annotation " + annotation.getName() + ", there's already a registered parameter transformer!");
+        }
+        parameterTransformers.computeIfAbsent(clazz, aClass -> new HashMap<>()).put(annotation, parameterProvider);
+    }
+
+    @Override
+    public <T> boolean hasRegisteredTransformer(@NotNull Class<T> clazz, Class<?> annotationType) {
+        return parameterTransformers.computeIfAbsent(clazz, aClass -> new HashMap<>()).containsKey(annotationType);
+    }
+
+
+    @NotNull
+    @Override
+    public Map<Class<?>, Map<Class<?>, ParameterProvider>> getRegisteredParameterTransformers() {
+        return parameterTransformers;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> ParameterProvider<T> getParameterTransformer(@NotNull Class<T> clazz, @Nullable Class<?> annotationType) {
+        return (ParameterProvider<T>) parameterTransformers.computeIfAbsent(clazz, aClass -> new HashMap<>()).get(annotationType);
+    }
+
+    private CommandTreeResult createCommandTree(AdvancedCommand callable, String alias) {
+        // Divide the alias in parts divided by a space
+        String[] aliasParts = alias.split(" ");
+
+        // Check if the alias has more than 1 part(check if has spaces)
+        if (aliasParts.length > 1) {
+            // Get the Optional of a command with the name of the part 1 of the alias
+            Optional<ICommand> command = getCommand(aliasParts[0]);
+
+            // Check if the command exists and then if the type is not AdvancedCommand then stop all this process, because we can't register commands on an ICommand
+            if (command.isPresent() && !(command.get() instanceof AdvancedCommand)) {
+                logger.log(Level.SEVERE, "The parent command {0} can''t be registered because a command with the same name and different type is already registered!", aliasParts[0]);
+                // Stop the process in a good way
+                return createTreeResult(null, false);
+            }
+
+            // Create the main/root command which is a command already created with the name of the part 1 of the alias, or a new command
+            AdvancedCommand mainCommand = (AdvancedCommand) command.orElse(getParentCommand(aliasParts, callable));
+            AdvancedCommand parentCommand = mainCommand;
+
+            // Iterate all the parts of the alias to create a command tree
+            for (int i = 0; i < aliasParts.length; i++) {
+                String aliasPart = aliasParts[i];
+
+                if (i == 0) {
+                    continue;
+                }
+
+                // This is a little bit confusing, but this checks if the part in which we're is the last of them
+                if (i == (aliasParts.length - 1)) {
+                    AdvancedCommand subCommand = getCommandWrapper(aliasPart, callable);
+
+                    parentCommand.registerSubCommand(subCommand);
+
+                    continue;
+                }
+
+                AdvancedCommand subCommand = getSubCommand(aliasPart, callable);
+
+                parentCommand.registerSubCommand(subCommand);
+
+                parentCommand = subCommand;
+            }
+
+            return createTreeResult(mainCommand, true);
+        }
+
+
+        return createTreeResult(null, false);
+    }
+
+    private CommandTreeResult createTreeResult(@Nullable AdvancedCommand command, boolean registeredSubCommands) {
+        return new CommandTreeResult() {
+            @Override
+            public Optional<AdvancedCommand> commandResult() {
+                return Optional.ofNullable(command);
+            }
+
+            @Override
+            public boolean subCommandsRegistered() {
+                return registeredSubCommands;
+            }
+        };
+    }
 
     private AdvancedCommand getParentCommand(String[] aliasParts, AdvancedCommand callable) {
         return new AbstractAdvancedCommand(
@@ -377,32 +441,4 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
         };
     }
 
-    @Override
-    public <T> void registerParameterTransformer(@NotNull Class<T> clazz, Class<?> annotation, @NotNull ParameterProvider<T> parameterProvider) {
-        if (hasRegisteredTransformer(clazz, annotation)) {
-            if (annotation == null) {
-                throw new IllegalStateException("Failed to register parameter transformer for class " + clazz.getName() + ", there's already a registered parameter transformer!");
-            }
-            throw new IllegalStateException("Failed to register parameter transformer for class " + clazz.getName() + " and annotation " + annotation.getName() + ", there's already a registered parameter transformer!");
-        }
-        parameterTransformers.computeIfAbsent(clazz, aClass -> new HashMap<>()).put(annotation, parameterProvider);
-    }
-
-    @Override
-    public <T> boolean hasRegisteredTransformer(@NotNull Class<T> clazz, Class<?> annotationType) {
-        return parameterTransformers.computeIfAbsent(clazz, aClass -> new HashMap<>()).containsKey(annotationType);
-    }
-
-
-    @NotNull
-    @Override
-    public Map<Class<?>, Map<Class<?>, ParameterProvider>> getRegisteredParameterTransformers() {
-        return parameterTransformers;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> ParameterProvider<T> getParameterTransformer(@NotNull Class<T> clazz, @Nullable Class<?> annotationType) {
-        return (ParameterProvider<T>) parameterTransformers.computeIfAbsent(clazz, aClass -> new HashMap<>()).get(annotationType);
-    }
 }
