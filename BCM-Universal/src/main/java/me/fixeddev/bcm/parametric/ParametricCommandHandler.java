@@ -85,11 +85,11 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
                 boolean commandPresent = treeResult.commandResult().isPresent();
                 boolean commandRegistered = isCommandRegistered(treeResult.commandResult().get().getNames()[0]);
 
-                if (commandPresent && !commandRegistered){
+                if (commandPresent && !commandRegistered) {
                     registerCommand(treeResult.commandResult().get());
                 }
 
-                if(!registeredSubCommands){
+                if (!registeredSubCommands) {
                     registeredSubCommands = treeResult.subCommandsRegistered();
                 }
             }
@@ -209,29 +209,7 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
 
             @Override
             public List<String> getSuggestions(Namespace namespace, ArgumentArray arguments) throws NoMoreArgumentsException {
-                if (arguments.getPosition() > 0) {
-                    return new ArrayList<>();
-                }
-
-                String actualArgument = "";
-
-                if (arguments.hasNext()) {
-                    actualArgument = arguments.next();
-                }
-
-                List<String> subCommands = getSubCommands().stream().map(cmd -> cmd.getNames()[0]).collect(Collectors.toList());
-
-                List<String> suggestions = new ArrayList<>();
-
-                for (String subCommand : subCommands) {
-                    if (!subCommand.startsWith(actualArgument)) {
-                        continue;
-                    }
-
-                    suggestions.add(subCommand);
-                }
-
-                return suggestions;
+                return getSubCommandSuggestions(arguments, this);
             }
 
             @Override
@@ -255,25 +233,7 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
                 callable.getExpectedFlags()) {
             @Override
             public List<String> getSuggestions(Namespace namespace, ArgumentArray arguments) throws NoMoreArgumentsException {
-                String actualArgument = "";
-
-                if (arguments.hasNext()) {
-                    actualArgument = arguments.next();
-                }
-
-                List<String> subCommands = getSubCommands().stream().map(cmd -> cmd.getNames()[0]).collect(Collectors.toList());
-
-                List<String> suggestions = new ArrayList<>();
-
-                for (String subCommand : subCommands) {
-                    if (!subCommand.startsWith(actualArgument)) {
-                        continue;
-                    }
-
-                    suggestions.add(subCommand);
-                }
-
-                return suggestions;
+                return getSubCommandSuggestions(arguments, this);
             }
 
             @Override
@@ -281,6 +241,32 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
                 return false;
             }
         };
+    }
+
+    private List<String> getSubCommandSuggestions(ArgumentArray arguments, AdvancedCommand command) throws NoMoreArgumentsException {
+        if (arguments.getPosition() > 0) {
+            return new ArrayList<>();
+        }
+
+        String actualArgument = "";
+
+        if (arguments.hasNext()) {
+            actualArgument = arguments.next();
+        }
+
+        List<String> subCommands = command.getSubCommands().stream().map(cmd -> cmd.getNames()[0]).collect(Collectors.toList());
+
+        List<String> suggestions = new ArrayList<>();
+
+        for (String subCommand : subCommands) {
+            if (!subCommand.startsWith(actualArgument)) {
+                continue;
+            }
+
+            suggestions.add(subCommand);
+        }
+
+        return suggestions;
     }
 
     private AdvancedCommand getCommandWrapper(String name, AdvancedCommand callable) {
