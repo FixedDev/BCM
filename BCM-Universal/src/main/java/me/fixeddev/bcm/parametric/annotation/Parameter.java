@@ -10,5 +10,6 @@ import java.lang.annotation.Target;
 public @interface Parameter {
     String value();
 
+    @Deprecated
     boolean isFlag() default false;
 }
