@@ -100,11 +100,10 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
 
                 Optional<AdvancedCommand> commandResult = treeResult.commandResult();
 
-                if(commandResult.isPresent()){
-                    boolean commandPresent = treeResult.commandResult().isPresent();
+                if (commandResult.isPresent()) {
                     boolean commandRegistered = isCommandRegistered(commandResult.get().getNames()[0]);
 
-                    if (commandPresent && !commandRegistered) {
+                    if (!commandRegistered) {
                         registerCommand(commandResult.get());
                     }
                 }
