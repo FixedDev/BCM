@@ -98,11 +98,13 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
             for (String alias : callable.getNames()) {
                 CommandTreeResult treeResult = createCommandTree(callable, alias);
 
-                boolean commandPresent = treeResult.commandResult().isPresent();
-                boolean commandRegistered = isCommandRegistered(treeResult.commandResult().get().getNames()[0]);
+                if(treeResult.commandResult().isPresent()){
+                    boolean commandPresent = treeResult.commandResult().isPresent();
+                    boolean commandRegistered = isCommandRegistered(treeResult.commandResult().get().getNames()[0]);
 
-                if (commandPresent && !commandRegistered) {
-                    registerCommand(treeResult.commandResult().get());
+                    if (commandPresent && !commandRegistered) {
+                        registerCommand(treeResult.commandResult().get());
+                    }
                 }
 
                 if (!registeredSubCommands) {
