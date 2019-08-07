@@ -15,6 +15,8 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
 
@@ -116,6 +118,8 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
         String label = searchResult.getLabel();
         ICommand command = searchResult.getCommand();
 
+        List<ICommand> subCommands = command.getSubCommands();
+
         if (!command.getPermission().trim().isEmpty() && !authorizer.isAuthorized(namespace, command.getPermission())) {
             throw new NoPermissionsException(command.getPermissionMessage());
         }
@@ -123,7 +127,15 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
         ArgumentArray arguments = new ArgumentArray(args);
         namespace.setObject(String.class, "label", label);
 
-        return command.getSuggestions(namespace, arguments);
+        List<String> suggestions = command.getSuggestions(namespace, arguments);
+
+        if (!subCommands.isEmpty()) {
+            List<String> subCommandsNames = subCommands.stream().filter(cmd -> authorizer.isAuthorized(namespace, cmd.getPermission())).map(ICommand::getNames).flatMap(Stream::of).collect(Collectors.toList());
+
+            suggestions.addAll(subCommandsNames);
+        }
+
+        return suggestions;
     }
 
     @Override
