@@ -6,12 +6,13 @@
 
     <artifactId>BCM</artifactId>
     <groupId>me.fixeddev</groupId>
-    <version>1.7.3</version>
+    <version>1.7.4</version>
 
     <packaging>pom</packaging>
     <modules>
         <module>BCM-Universal</module>
         <module>BCM-Bukkit</module>
+        <!--<module>Examples</module> -->
     </modules>
 
     <properties>
