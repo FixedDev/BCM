@@ -217,7 +217,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
             index++;
         }
 
-        int argumentIndex = argumentArray.getSize();
+        int argumentIndex = argumentArray.getSize() - 1 ;
 
         if (argumentIndex >= typeMap.size()) {
             return suggestions;
