@@ -173,15 +173,15 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
     @Override
     public Optional<CommandSearchResult> getCommandFromCommandLine(String commandLine) {
         String[] args = commandLine.split(" ");
-        String label = "";
+        StringBuilder label = new StringBuilder();
 
         int i = 0;
-        while (!commandMap.containsKey(label) && i < args.length) {
-            label = args[i];
+        while (!commandMap.containsKey(label.toString()) && i < args.length) {
+            label = new StringBuilder(args[i]);
             i++;
         }
 
-        ICommand command = commandMap.get(label);
+        ICommand command = commandMap.get(label.toString());
 
         if (command == null) {
             return Optional.empty();
@@ -219,11 +219,11 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
 
                 args = subCommandArgs;
 
-                label = label + " " + subCommandLabel;
+                label.append(" ").append(subCommandLabel);
             }
         }
 
-        return Optional.of(fromValues(command, args, label));
+        return Optional.of(fromValues(command, args, label.toString()));
     }
 
     @Override
