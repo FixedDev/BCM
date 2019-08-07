@@ -42,7 +42,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
         this.registry = registry;
         this.method = method;
 
-        subCommands = new CopyOnWriteArrayList<>();
+        subCommands = new ArrayList<>();
     }
 
     @Override
@@ -70,7 +70,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
             }
         }
 
-        return new ArrayList<>(flags);
+        return flags;
     }
 
     @Override
@@ -100,7 +100,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
 
     @Override
     public List<ICommand> getSubCommands() {
-        return new ArrayList<>(subCommands);
+        return subCommands;
     }
 
     public void registerSubCommand(ICommand command) {
