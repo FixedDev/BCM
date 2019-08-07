@@ -189,7 +189,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
         int index = 0;
 
         for (ParameterData parameter : parameters) {
-            boolean isFlag = parameter instanceof FlagData;
+            boolean isFlag = parameter instanceof FlagData || parameter.isFlag();
 
             if (isFlag || parameter.getType() == CommandContext.class) {
                 continue;
