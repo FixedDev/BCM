@@ -27,4 +27,8 @@ public interface ParameterProviderRegistry {
     default <T> boolean hasRegisteredTransformer(@NotNull Class<T> clazz) {
         return hasRegisteredTransformer(clazz, null);
     }
+
+    static ParameterProviderRegistry createRegistry() {
+        return new ParameterProviderRegistryImpl();
+    }
 }
