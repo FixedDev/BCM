@@ -44,7 +44,10 @@ public class ArgumentData implements IParameterData {
         return ParameterType.ARGUMENT;
     }
 
-    @Override
+    /**
+     * @return - The default value of this parameter, absent if this parameter doesn't has a default value
+     * "false" if the ParameterType is FLAG
+     */
     public Optional<String> getDefaultValue() {
         return Optional.ofNullable(defaultValue);
     }
