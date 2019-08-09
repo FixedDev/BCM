@@ -18,6 +18,7 @@ import me.fixeddev.bcm.parametric.ParametricCommandHandler;
 import me.fixeddev.bcm.parametric.annotation.Command;
 import me.fixeddev.bcm.parametric.annotation.Flag;
 import me.fixeddev.bcm.parametric.annotation.JoinedString;
+import me.fixeddev.bcm.parametric.annotation.Optional;
 import me.fixeddev.bcm.parametric.providers.ParameterProviderRegistry;
 
 import java.util.logging.Level;
@@ -44,6 +45,7 @@ public class ParametricCommandUsage {
         namespace.setObject(Sender.class, "sender", new Sender("FixedDev")); // This puts the object sender into the namespace, needed for our specific authorizer
 
         try {
+            handler.dispatchCommand(namespace, "test");
             handler.dispatchCommand(namespace, "test ola");
             handler.dispatchCommand(namespace, "test subcommand ola");
             handler.dispatchCommand(namespace, "test withflag -f");
@@ -62,7 +64,7 @@ public class ParametricCommandUsage {
     public static class TestCommandClass implements CommandClass {
 
         @Command(names = "test")
-        public boolean testCommand(Sender sender, @JoinedString String message) {
+        public boolean testCommand(Sender sender, @JoinedString @Optional("test") String message) {
             System.out.println("Hello " + sender.getName() + " " + message);
 
             return true;
