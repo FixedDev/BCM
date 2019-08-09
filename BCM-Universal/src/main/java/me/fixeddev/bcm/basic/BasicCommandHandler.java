@@ -177,7 +177,7 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
 
         int i = 0;
         while (!commandMap.containsKey(label.toString()) && i < args.length) {
-            label = new StringBuilder(args[i]);
+            label.append(args[i].toLowerCase());
             i++;
         }
 
