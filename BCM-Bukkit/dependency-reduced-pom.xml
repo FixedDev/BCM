@@ -2,8 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>BCM</artifactId>
-    <groupId>us.sparknetwork</groupId>
-    <version>1.5</version>
+    <groupId>me.fixeddev</groupId>
+    <version>1.7.4</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>BCM-Bukkit</artifactId>
@@ -21,6 +21,10 @@
         <exclusion>
           <artifactId>json-simple</artifactId>
           <groupId>com.googlecode.json-simple</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>Spigot-BungeeBridge</artifactId>
+          <groupId>me.fixeddev</groupId>
         </exclusion>
         <exclusion>
           <artifactId>guava</artifactId>

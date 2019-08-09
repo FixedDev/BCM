@@ -3,7 +3,7 @@ package me.fixeddev.bcm.parametric.providers.defaults;
 import me.fixeddev.bcm.basic.ArgumentStack;
 import me.fixeddev.bcm.basic.Namespace;
 import me.fixeddev.bcm.basic.exceptions.NoMoreArgumentsException;
-import me.fixeddev.bcm.parametric.ParameterProvider;
+import me.fixeddev.bcm.parametric.providers.ParameterProvider;
 
 import java.lang.annotation.Annotation;
 

@@ -1,4 +1,4 @@
-package me.fixeddev.bcm.parametric;
+package me.fixeddev.bcm.parametric.providers;
 
 import me.fixeddev.bcm.basic.ArgumentStack;
 import me.fixeddev.bcm.basic.Namespace;

@@ -4,7 +4,7 @@ import me.fixeddev.bcm.basic.ArgumentStack;
 import me.fixeddev.bcm.basic.Namespace;
 import me.fixeddev.bcm.basic.exceptions.ArgumentsParseException;
 import me.fixeddev.bcm.basic.exceptions.NoMoreArgumentsException;
-import me.fixeddev.bcm.parametric.ParameterProvider;
+import me.fixeddev.bcm.parametric.providers.ParameterProvider;
 import org.bukkit.command.CommandSender;
 
 import java.lang.annotation.Annotation;
