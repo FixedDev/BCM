@@ -9,7 +9,7 @@ import java.lang.annotation.Annotation;
 
 public class SenderProvider implements ParameterProvider<Sender> {
     @Override
-    public Sender transformParameter(ArgumentStack arguments, Namespace namespace, Annotation annotation, String defaultValue) {
+    public Sender transformParameter(ArgumentStack arguments, Namespace namespace, Annotation annotation) {
         return namespace.getObject(Sender.class, "sender");
     }
 
