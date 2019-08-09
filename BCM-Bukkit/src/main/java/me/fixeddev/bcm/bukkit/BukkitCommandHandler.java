@@ -3,16 +3,11 @@ package me.fixeddev.bcm.bukkit;
 import me.fixeddev.bcm.basic.ICommand;
 import me.fixeddev.bcm.basic.PermissionMessageProvider;
 import me.fixeddev.bcm.bukkit.providers.BukkitModule;
-import me.fixeddev.bcm.bukkit.providers.CommandSenderProvider;
-import me.fixeddev.bcm.bukkit.providers.PlayerProvider;
-import me.fixeddev.bcm.bukkit.providers.OfflinePlayerProvider;
+
 import me.fixeddev.bcm.parametric.ParametricCommandHandler;
 import me.fixeddev.bcm.parametric.providers.ParameterProviderRegistry;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandMap;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
 import java.util.Map;
