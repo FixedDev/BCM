@@ -29,6 +29,8 @@ public class ParametricCommandUsage {
         PermissionMessageProvider messageProvider = new NoOpPermissionMessageProvider(); // This is for i18n no permission support
         Logger logger = Logger.getLogger("CommandsLog"); // A logger to log the commmands registration
 
+        logger.setLevel(Level.ALL);
+
         // Create the registry for the parameter providers
         ParameterProviderRegistry registry = ParameterProviderRegistry.createRegistry();
         // Register the sender provider
@@ -42,8 +44,8 @@ public class ParametricCommandUsage {
         namespace.setObject(Sender.class, "sender", new Sender("FixedDev")); // This puts the object sender into the namespace, needed for our specific authorizer
 
         try {
-            handler.dispatchCommand(namespace, "test");
-            handler.dispatchCommand(namespace, "test subcommand");
+            handler.dispatchCommand(namespace, "test ola");
+            handler.dispatchCommand(namespace, "test subcommand ola");
             handler.dispatchCommand(namespace, "test withflag -f");
         } catch (CommandException e) {
             logger.log(Level.SEVERE, "The command failed to execute ;(", e);
