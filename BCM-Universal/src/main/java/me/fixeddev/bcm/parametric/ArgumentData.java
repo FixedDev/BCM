@@ -1,5 +1,8 @@
 package me.fixeddev.bcm.parametric;
 
+import me.fixeddev.bcm.parametric.annotation.Parameter;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Optional;
 
 public class ArgumentData implements IParameterData {
@@ -12,6 +15,11 @@ public class ArgumentData implements IParameterData {
         this.name = name;
         this.parameterType = parameterType;
         this.defaultValue = defaultValue;
+    }
+
+    public static ArgumentData valueOf(@NotNull Class<?> parameterType, @NotNull Parameter parameter, me.fixeddev.bcm.parametric.annotation.Optional optional) {
+        String defaultValue = optional == null ? null : optional.value();
+        return new ArgumentData(parameter.value(), parameterType, defaultValue);
     }
 
     /**

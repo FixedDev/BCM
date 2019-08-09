@@ -10,6 +10,10 @@ public class NewFlagData implements IParameterData {
         this.flagName = flagName;
     }
 
+    public static NewFlagData valueOf(char name){
+        return new NewFlagData(name);
+    }
+
     /**
      * @return - The name of this flag, just a letter
      */
