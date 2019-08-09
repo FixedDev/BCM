@@ -26,6 +26,8 @@ public class AdvancedCommandUsage {
         PermissionMessageProvider messageProvider = new NoOpPermissionMessageProvider(); // This is for i18n no permission support
         Logger logger = Logger.getLogger("CommandsLog"); // A logger to log the commmands registration
 
+        logger.setLevel(Level.ALL);
+
         BasicCommandHandler handler = new BasicCommandHandler(authorizer, messageProvider, logger); // The class that registers the commands and dispatch them
 
         handler.registerCommand(new TestAdvancedCommand()); // This registers the command "test" into the handler, now it can be dispatched by this instance
