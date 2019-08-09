@@ -273,13 +273,13 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
 
         Command command = clazzMethod.getAnnotation(Command.class);
 
-        List<IParameterData> parametersData = new ArrayList<>();
+        List<ParameterData> parametersData = new ArrayList<>();
 
         for (int i = 0; i < clazzMethod.getParameterTypes().length; i++) {
             Class<?> type = clazzMethod.getParameterTypes()[i];
             Annotation[] annotations = clazzMethod.getParameterAnnotations()[i];
 
-            IParameterData parameterData = getParameterData(clazzMethod, type, annotations);
+            ParameterData parameterData = getParameterData(clazzMethod, type, annotations);
 
             if (parameterData == null) {
                 logger.log(Level.WARNING, "The parameter {0} of the method {1} doesn''t has a valid parameter data ", new Object[]{i, clazzMethod.getName()});
@@ -292,7 +292,7 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
         return new ParametricCommandExecutor(commandClass, command, parametersData, registry, clazzMethod);
     }
 
-    protected IParameterData getParameterData(Method clazzMethod, Class<?> type, Annotation[] annotations) {
+    protected ParameterData getParameterData(Method clazzMethod, Class<?> type, Annotation[] annotations) {
         List<Annotation> modifiers = new ArrayList<>();
 
         if (type == CommandContext.class) {
@@ -326,10 +326,10 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
             return new ArgumentData(type.getSimpleName(), type, defaultValue);
         }
 
-        IParameterData parameterData;
+        ParameterData parameterData;
 
         if (dataAnnotation instanceof Flag) {
-            parameterData = new NewFlagData(((Flag) dataAnnotation).value());
+            parameterData = new FlagData(((Flag) dataAnnotation).value());
         } else {
             parameterData = new ArgumentData(((Parameter) dataAnnotation).value(), modifiers,type, defaultValue);
         }

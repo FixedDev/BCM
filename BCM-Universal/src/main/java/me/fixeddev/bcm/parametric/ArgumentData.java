@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ArgumentData implements IParameterData {
+public class ArgumentData implements ParameterData {
 
     private String name;
     private List<Annotation> modifiers;

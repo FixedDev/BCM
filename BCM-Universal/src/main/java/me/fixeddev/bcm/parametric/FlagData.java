@@ -1,15 +1,15 @@
 package me.fixeddev.bcm.parametric;
 
-public class NewFlagData implements IParameterData {
+public class FlagData implements ParameterData {
 
     private char flagName;
 
-    public NewFlagData(char flagName) {
+    public FlagData(char flagName) {
         this.flagName = flagName;
     }
 
-    public static NewFlagData valueOf(char name){
-        return new NewFlagData(name);
+    public static FlagData valueOf(char name){
+        return new FlagData(name);
     }
 
     /**

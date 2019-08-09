@@ -1,6 +1,6 @@
 package me.fixeddev.bcm.parametric;
 
-public interface IParameterData {
+public interface ParameterData {
 
     /**
      * @return - The class type of this parameter

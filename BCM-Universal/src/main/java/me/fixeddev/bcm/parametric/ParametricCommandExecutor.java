@@ -25,7 +25,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
 
     private CommandClass instance;
     private Command command;
-    private List<IParameterData> parameters;
+    private List<ParameterData> parameters;
 
     private ParameterProviderRegistry providerRegistry;
 
@@ -35,7 +35,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
 
     private List<Character> flags;
 
-    public ParametricCommandExecutor(CommandClass instance, Command command, List<IParameterData> parameters, ParameterProviderRegistry registry, Method method) {
+    public ParametricCommandExecutor(CommandClass instance, Command command, List<ParameterData> parameters, ParameterProviderRegistry registry, Method method) {
         this.instance = instance;
         this.command = command;
         this.parameters = parameters;
@@ -119,9 +119,9 @@ class ParametricCommandExecutor implements AdvancedCommand {
 
         ArgumentStack argumentStack = context.getRawArgumentsWithoutFlags();
 
-        for (IParameterData data : parameters) {
+        for (ParameterData data : parameters) {
             if(data.getType() == ParameterType.FLAG){
-                NewFlagData flagData = (NewFlagData) data;
+                FlagData flagData = (FlagData) data;
 
                 arguments.add(context.getFlagValue(flagData.getName()));
 
@@ -189,7 +189,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
 
         int index = 0;
 
-        for (IParameterData parameter : parameters) {
+        for (ParameterData parameter : parameters) {
             if (parameter.getType() == ParameterType.FLAG || parameter.getParameterType() == CommandContext.class) {
                 continue;
             }
