@@ -18,6 +18,7 @@ import me.fixeddev.bcm.parametric.ParametricCommandHandler;
 import me.fixeddev.bcm.parametric.annotation.Command;
 import me.fixeddev.bcm.parametric.annotation.Flag;
 import me.fixeddev.bcm.parametric.annotation.JoinedString;
+import me.fixeddev.bcm.parametric.providers.ParameterProviderRegistry;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,9 +29,12 @@ public class ParametricCommandUsage {
         PermissionMessageProvider messageProvider = new NoOpPermissionMessageProvider(); // This is for i18n no permission support
         Logger logger = Logger.getLogger("CommandsLog"); // A logger to log the commmands registration
 
-        ParametricCommandHandler handler = new ParametricCommandHandler(authorizer, messageProvider, logger); // The class that registers the parametric commands and dispatch them
+        // Create the registry for the parameter providers
+        ParameterProviderRegistry registry = ParameterProviderRegistry.createRegistry();
+        // Register the sender provider
+        registry.registerParameterTransfomer(Sender.class, new SenderProvider());
 
-        handler.registerParameterTransformer(Sender.class, null, new SenderProvider());
+        ParametricCommandHandler handler = new ParametricCommandHandler(authorizer, messageProvider, registry, logger); // The class that registers the parametric commands and dispatch them
 
         handler.registerCommandClass(new TestCommandClass()); // This registers all the commands of that class into the handler, now they can be dispatched by this instance
 
