@@ -11,6 +11,7 @@ import me.fixeddev.bcm.basic.ICommand;
 import me.fixeddev.bcm.basic.exceptions.ArgumentsParseException;
 import me.fixeddev.bcm.parametric.annotation.Command;
 import me.fixeddev.bcm.parametric.exceptions.NoTransformerFound;
+import me.fixeddev.bcm.parametric.providers.ParameterProvider;
 import me.fixeddev.bcm.parametric.providers.ParameterProviderRegistry;
 
 import java.lang.annotation.Annotation;
