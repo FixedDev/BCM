@@ -273,15 +273,16 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
 
         Command command = clazzMethod.getAnnotation(Command.class);
 
-        List<ParameterData> parametersData = new ArrayList<>();
+        List<IParameterData> parametersData = new ArrayList<>();
 
         for (int i = 0; i < clazzMethod.getParameterTypes().length; i++) {
             Class<?> type = clazzMethod.getParameterTypes()[i];
             Annotation[] annotations = clazzMethod.getParameterAnnotations()[i];
 
-            ParameterData parameterData = getParameterData(clazzMethod, type, annotations);
+            IParameterData parameterData = getParameterData(clazzMethod, type, annotations);
 
             if (parameterData == null) {
+                logger.log(Level.WARNING, "The parameter {0} of the method {1} doesn''t has a valid parameter data ", new Object[]{i, clazzMethod.getName()});
                 return null;
             }
 
@@ -291,47 +292,29 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
         return new ParametricCommandExecutor(commandClass, command, parametersData, registry, clazzMethod);
     }
 
-    protected ParameterData getParameterData(Method clazzMethod, Class<?> type, Annotation[] annotations) {
+    protected IParameterData getParameterData(Method clazzMethod, Class<?> type, Annotation[] annotations) {
         List<Annotation> modifiers = new ArrayList<>();
 
         if (type == CommandContext.class) {
-            return new ParameterData(type, new Parameter() {
-                @Override
-                public Class<? extends Annotation> annotationType() {
-                    return Parameter.class;
-                }
-
-                @Override
-                public String value() {
-                    return "context";
-                }
-
-                @Override
-                public boolean isFlag() {
-                    return false;
-                }
-            }, emptyOptionalAnnotation(), modifiers);
+            return new ArgumentData("context", CommandContext.class, null);
         }
 
-        Parameter param = null;
+        Annotation dataAnnotation = null;
 
-        me.fixeddev.bcm.parametric.annotation.Optional optional = emptyOptionalAnnotation();
+        String defaultValue = null;
 
         for (Annotation annotation : annotations) {
-            if (annotation instanceof Flag) {
-                param = FlagData.getFromFlag((Flag) annotation);
+            if (annotation instanceof Flag || annotation instanceof Parameter) {
+                if (dataAnnotation != null) {
+                    throw new IllegalStateException("One of the parameters of the method " + clazzMethod.getName() + " has a Flag and a Parameter annotations or repeated annotations of these types!");
+                }
 
-                continue;
-            }
-
-            if (annotation instanceof Parameter) {
-                param = (Parameter) annotation;
-
+                dataAnnotation = annotation;
                 continue;
             }
 
             if (annotation instanceof me.fixeddev.bcm.parametric.annotation.Optional) {
-                optional = (me.fixeddev.bcm.parametric.annotation.Optional) annotation;
+                defaultValue = ((me.fixeddev.bcm.parametric.annotation.Optional) annotation).value();
 
                 continue;
             }
@@ -339,51 +322,24 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
             modifiers.add(annotation);
         }
 
-        if (param == null) {
-            return new ParameterData(type, new Parameter() {
-                @Override
-                public Class<? extends Annotation> annotationType() {
-                    return Parameter.class;
-                }
-
-                @Override
-                public String value() {
-                    return type.getSimpleName();
-                }
-
-                @Override
-                public boolean isFlag() {
-                    return false;
-                }
-            }, optional, modifiers);
+        if (dataAnnotation == null) {
+            return new ArgumentData(type.getSimpleName(), type, defaultValue);
         }
 
-        if (param.isFlag() && (type != Boolean.class && type != boolean.class)) {
+        IParameterData parameterData;
+
+        if (dataAnnotation instanceof Flag) {
+            parameterData = new NewFlagData(((Flag) dataAnnotation).value());
+        } else {
+            parameterData = new ArgumentData(((Parameter) dataAnnotation).value(), modifiers,type, defaultValue);
+        }
+
+        if (parameterData.getType() == ParameterType.FLAG && (type != Boolean.class && type != boolean.class)) {
             logger.log(Level.WARNING, "The method {0} of class {1} has a flag parameter but the type isn''t boolean.", new Object[]{clazzMethod.getDeclaringClass().getName(), clazzMethod.getName()});
 
             return null;
         }
 
-        if (param.isFlag()) {
-            return new FlagData(param, optional, modifiers);
-        }
-
-        return new ParameterData(type, param, optional, modifiers);
+        return parameterData;
     }
-
-    private me.fixeddev.bcm.parametric.annotation.Optional emptyOptionalAnnotation() {
-        return new me.fixeddev.bcm.parametric.annotation.Optional() {
-
-            @Override
-            public Class<? extends Annotation> annotationType() {
-                return me.fixeddev.bcm.parametric.annotation.Optional.class;
-            }
-
-            @Override
-            public String value() {
-                return "";
-            }
-        };
-    }
-
 }
