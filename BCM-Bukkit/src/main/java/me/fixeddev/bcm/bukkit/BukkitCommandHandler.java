@@ -2,10 +2,12 @@ package me.fixeddev.bcm.bukkit;
 
 import me.fixeddev.bcm.basic.ICommand;
 import me.fixeddev.bcm.basic.PermissionMessageProvider;
+import me.fixeddev.bcm.bukkit.providers.BukkitModule;
 import me.fixeddev.bcm.bukkit.providers.CommandSenderProvider;
 import me.fixeddev.bcm.bukkit.providers.PlayerProvider;
 import me.fixeddev.bcm.bukkit.providers.OfflinePlayerProvider;
 import me.fixeddev.bcm.parametric.ParametricCommandHandler;
+import me.fixeddev.bcm.parametric.providers.ParameterProviderRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandMap;
@@ -23,12 +25,10 @@ public class BukkitCommandHandler extends ParametricCommandHandler {
 
     private CommandMap commandMap;
 
-    public BukkitCommandHandler(Logger logger, PermissionMessageProvider messageProvider) {
-        super(new CommandSenderAuthorizer(), messageProvider, logger);
+    public BukkitCommandHandler(Logger logger, PermissionMessageProvider messageProvider, ParameterProviderRegistry registry) {
+        super(new CommandSenderAuthorizer(), messageProvider, registry, logger);
 
-        registerParameterTransfomer(CommandSender.class, new CommandSenderProvider());
-        registerParameterTransfomer(OfflinePlayer.class, new OfflinePlayerProvider());
-        registerParameterTransfomer(Player.class, new PlayerProvider());
+        registry.installModule(new BukkitModule());
 
         commandWrapperMap = new ConcurrentHashMap<>();
 
