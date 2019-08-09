@@ -220,6 +220,8 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
                 args = subCommandArgs;
 
                 label.append(" ").append(subCommandLabel);
+            } else {
+                break;
             }
         }
 
