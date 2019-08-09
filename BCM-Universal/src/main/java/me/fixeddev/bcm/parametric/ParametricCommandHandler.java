@@ -26,7 +26,6 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class ParametricCommandHandler extends BasicCommandHandler implements ParametricCommandRegistry {
 
@@ -36,6 +35,22 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
         super(authorizer, messageProvider, logger);
 
         this.registry = registry;
+    }
+
+
+    @Override
+    public void registerCommand(ICommand command) {
+        Optional<ICommand> optRegisteredCommand = getCommand(command.getNames()[0]);
+
+        if (optRegisteredCommand.isPresent() && optRegisteredCommand.get() instanceof MockCommand) {
+            ICommand registeredCommand = optRegisteredCommand.get();
+
+            if(command instanceof AdvancedCommand){
+                registeredCommand.getSubCommands().forEach(((AdvancedCommand) command)::registerSubCommand);
+            }
+        }
+
+        super.registerCommand(command);
     }
 
     @Override
@@ -105,7 +120,7 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
             }
 
             // Create the main/root command which is a command already created with the name of the part 1 of the alias, or a new command
-            AdvancedCommand mainCommand = (AdvancedCommand) command.orElse(getParentCommand(aliasParts, callable));
+            AdvancedCommand mainCommand = (AdvancedCommand) command.orElse(new MockCommand(aliasParts[0], "/<command> <subcommand>", callable));
             AdvancedCommand parentCommand = mainCommand;
 
             // Iterate all the parts of the alias to create a command tree
@@ -118,14 +133,14 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
 
                 // This is a little bit confusing, but this checks if the part in which we're is the last of them
                 if (i == (aliasParts.length - 1)) {
-                    AdvancedCommand subCommand = getCommandWrapper(aliasPart, callable);
+                    AdvancedCommand subCommand = new CommandWrapper(aliasPart, callable);
 
                     parentCommand.registerSubCommand(subCommand);
 
                     continue;
                 }
 
-                AdvancedCommand subCommand = getSubCommand(aliasPart, callable);
+                AdvancedCommand subCommand = new MockCommand(aliasPart, callable.getUsage(), callable);
 
                 parentCommand.registerSubCommand(subCommand);
 
@@ -134,7 +149,6 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
 
             return createTreeResult(mainCommand, true);
         }
-
 
         return createTreeResult(null, false);
     }
@@ -149,105 +163,6 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
             @Override
             public boolean subCommandsRegistered() {
                 return registeredSubCommands;
-            }
-        };
-    }
-
-    private AdvancedCommand getParentCommand(String[] aliasParts, AdvancedCommand callable) {
-        return new AbstractAdvancedCommand(
-                new String[]{aliasParts[0]},
-                "/<command> <subcommand>",
-                callable.getDescription(),
-                callable.getPermission(),
-                callable.getPermissionMessage(),
-                new ArrayList<>(),
-                0,
-                -1,
-                callable.allowAnyFlags(),
-                callable.getExpectedFlags()) {
-
-            @Override
-            public List<String> getSuggestions(Namespace namespace, ArgumentArray arguments) throws NoMoreArgumentsException {
-                return getSubCommandSuggestions(arguments, this);
-            }
-
-            @Override
-            public boolean execute(CommandContext context) {
-                return false;
-            }
-        };
-    }
-
-    private AdvancedCommand getSubCommand(String name, AdvancedCommand callable) {
-        return new AbstractAdvancedCommand(
-                new String[]{name},
-                callable.getUsage(),
-                callable.getDescription(),
-                callable.getPermission(),
-                callable.getPermissionMessage(),
-                new ArrayList<>(),
-                0,
-                -1,
-                callable.allowAnyFlags(),
-                callable.getExpectedFlags()) {
-            @Override
-            public List<String> getSuggestions(Namespace namespace, ArgumentArray arguments) throws NoMoreArgumentsException {
-                return getSubCommandSuggestions(arguments, this);
-            }
-
-            @Override
-            public boolean execute(CommandContext context) {
-                return false;
-            }
-        };
-    }
-
-    private List<String> getSubCommandSuggestions(ArgumentArray arguments, AdvancedCommand command) throws NoMoreArgumentsException {
-        if (arguments.getPosition() > 0) {
-            return new ArrayList<>();
-        }
-
-        String actualArgument = "";
-
-        if (arguments.hasNext()) {
-            actualArgument = arguments.next();
-        }
-
-        List<String> subCommands = command.getSubCommands().stream().map(cmd -> cmd.getNames()[0]).collect(Collectors.toList());
-
-        List<String> suggestions = new ArrayList<>();
-
-        for (String subCommand : subCommands) {
-            if (!subCommand.startsWith(actualArgument)) {
-                continue;
-            }
-
-            suggestions.add(subCommand);
-        }
-
-        return suggestions;
-    }
-
-    private AdvancedCommand getCommandWrapper(String name, AdvancedCommand callable) {
-        return new AbstractAdvancedCommand(
-                new String[]{name},
-                callable.getUsage(),
-                callable.getDescription(),
-                callable.getPermission(),
-                callable.getPermissionMessage(),
-                new ArrayList<>(),
-                callable.getMinArguments(),
-                callable.getMaxArguments(),
-                callable.allowAnyFlags(),
-                callable.getExpectedFlags()) {
-            @Override
-            public List<String> getSuggestions(Namespace namespace, ArgumentArray arguments) throws CommandException, NoMoreArgumentsException {
-                return callable.getSuggestions(namespace, arguments);
-            }
-
-            @Override
-            public boolean execute(CommandContext context) throws CommandException, NoPermissionsException, NoMoreArgumentsException, ArgumentsParseException {
-                return callable.execute(context);
             }
         };
     }
@@ -331,7 +246,7 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
         if (dataAnnotation instanceof Flag) {
             parameterData = new FlagData(((Flag) dataAnnotation).value());
         } else {
-            parameterData = new ArgumentData(((Parameter) dataAnnotation).value(), modifiers,type, defaultValue);
+            parameterData = new ArgumentData(((Parameter) dataAnnotation).value(), modifiers, type, defaultValue);
         }
 
         if (parameterData.getType() == ParameterType.FLAG && (type != Boolean.class && type != boolean.class)) {
@@ -341,5 +256,55 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
         }
 
         return parameterData;
+    }
+
+    class CommandWrapper extends AbstractAdvancedCommand {
+
+        private AdvancedCommand callable;
+
+        public CommandWrapper(String name, AdvancedCommand callable) {
+            super(new String[]{name},
+                    callable.getUsage(),
+                    callable.getDescription(),
+                    callable.getPermission(),
+                    callable.getPermissionMessage(),
+                    new ArrayList<>(),
+                    callable.getMinArguments(),
+                    callable.getMaxArguments(),
+                    callable.allowAnyFlags(),
+                    callable.getExpectedFlags());
+
+            this.callable = callable;
+        }
+
+        @Override
+        public boolean execute(CommandContext context) throws CommandException, NoPermissionsException, NoMoreArgumentsException, ArgumentsParseException {
+            return callable.execute(context);
+        }
+
+        @Override
+        public List<String> getSuggestions(Namespace namespace, ArgumentArray arguments) throws CommandException, NoMoreArgumentsException {
+            return callable.getSuggestions(namespace, arguments);
+        }
+    }
+
+    class MockCommand extends AbstractAdvancedCommand {
+        public MockCommand(String name, String usage, AdvancedCommand callable) {
+            super(new String[]{name},
+                    usage,
+                    callable.getDescription(),
+                    callable.getPermission(),
+                    callable.getPermissionMessage(),
+                    new ArrayList<>(),
+                    0,
+                    -1,
+                    callable.allowAnyFlags(),
+                    callable.getExpectedFlags());
+        }
+
+        @Override
+        public boolean execute(CommandContext context) throws CommandException, NoPermissionsException, NoMoreArgumentsException, ArgumentsParseException {
+            return false;
+        }
     }
 }
