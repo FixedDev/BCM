@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 class ParametricCommandExecutor implements AdvancedCommand {
 
@@ -121,7 +122,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
         ArgumentStack argumentStack = context.getRawArgumentsWithoutFlags();
 
         for (ParameterData data : parameters) {
-            if(data.getType() == ParameterType.FLAG){
+            if (data.getType() == ParameterType.FLAG) {
                 FlagData flagData = (FlagData) data;
 
                 arguments.add(context.getFlagValue(flagData.getName()));
@@ -158,12 +159,24 @@ class ParametricCommandExecutor implements AdvancedCommand {
                 transformer = providerRegistry.getParameterTransformer(type);
             }
 
+            Optional<String> defaultValue = ((ArgumentData) data).getDefaultValue();
+
+            ArgumentStack defaultStack = new ArgumentStack(defaultValue.orElse("").split(" "));
+
             Object object;
 
             try {
-                object = transformer.transformParameter(argumentStack, context.getNamespace(), firstAnnotation, argumentData.getDefaultValue().orElse(""));
-            } catch (NoMoreArgumentsException e) {
-                throw new CommandException(e);
+                object = transformer.transformParameter(argumentStack, context.getNamespace(), firstAnnotation);
+
+                if (object == null) {
+                    object = transformer.transformParameter(defaultStack, context.getNamespace(), firstAnnotation);
+                }
+            } catch (NoMoreArgumentsException | ArgumentsParseException e) {
+                try {
+                    object = transformer.transformParameter(defaultStack, context.getNamespace(), firstAnnotation);
+                } catch (NoMoreArgumentsException | ArgumentsParseException ex) {
+                    throw new CommandException(ex);
+                }
             }
 
             arguments.add(object);
