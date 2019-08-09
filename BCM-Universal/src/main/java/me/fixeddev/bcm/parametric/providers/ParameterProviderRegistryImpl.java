@@ -1,13 +1,34 @@
-package me.fixeddev.bcm.parametric;
+package me.fixeddev.bcm.parametric.providers;
 
+import me.fixeddev.bcm.basic.Namespace;
+import me.fixeddev.bcm.parametric.ParameterProvider;
+import me.fixeddev.bcm.parametric.annotation.JoinedString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ParameterProviderRegistryImpl implements ParameterProviderRegistry {
+class ParameterProviderRegistryImpl implements ParameterProviderRegistry {
     private Map<Class<?>, Map<Class<?>, ParameterProvider>> parameterTransformers;
+
+    ParameterProviderRegistryImpl() {
+        parameterTransformers = new HashMap<>();
+
+        // default
+        registerParameterTransfomer(Namespace.class, new NamespaceProvider());
+        registerParameterTransfomer(String.class, new StringParameterProvider());
+        registerParameterTransformer(String.class, JoinedString.class, new JoinedStringProvider());
+
+        registerParameterTransfomer(boolean.class, new BooleanProvider());
+        registerParameterTransfomer(Boolean.class, new BooleanProvider());
+
+        registerParameterTransfomer(double.class, new DoubleProvider());
+        registerParameterTransfomer(Double.class, new DoubleProvider());
+
+        registerParameterTransfomer(int.class, new IntegerProvider());
+        registerParameterTransfomer(Integer.class, new IntegerProvider());
+    }
 
     @Override
     public <T> void registerParameterTransformer(@NotNull Class<T> clazz, Class<?> annotation, @NotNull ParameterProvider<T> parameterProvider) {

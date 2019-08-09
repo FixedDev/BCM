@@ -1,5 +1,6 @@
-package me.fixeddev.bcm.parametric;
+package me.fixeddev.bcm.parametric.providers;
 
+import me.fixeddev.bcm.parametric.ParameterProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,6 +16,10 @@ public interface ParameterProviderRegistry {
     <T> void registerParameterTransformer(@NotNull Class<T> clazz, @Nullable Class<?> annotationType, @NotNull ParameterProvider<T> parameterProvider);
 
     <T> boolean hasRegisteredTransformer(@NotNull Class<T> clazz, @Nullable Class<?> annotationType);
+
+    default void installModule(ProvidersModule module){
+        module.configure(this);
+    }
 
     default <T> ParameterProvider<T> getParameterTransformer(@NotNull Class<T> clazz) {
         return getParameterTransformer(clazz, null);
