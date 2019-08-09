@@ -11,6 +11,7 @@ import me.fixeddev.bcm.basic.ICommand;
 import me.fixeddev.bcm.basic.exceptions.ArgumentsParseException;
 import me.fixeddev.bcm.parametric.annotation.Command;
 import me.fixeddev.bcm.parametric.exceptions.NoTransformerFound;
+import me.fixeddev.bcm.parametric.providers.ParameterProviderRegistry;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -19,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 class ParametricCommandExecutor implements AdvancedCommand {
 
@@ -27,7 +27,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
     private Command command;
     private List<ParameterData> parameters;
 
-    private ParametricCommandRegistry registry;
+    private ParameterProviderRegistry providerRegistry;
 
     private Method method;
 
@@ -35,11 +35,11 @@ class ParametricCommandExecutor implements AdvancedCommand {
 
     private List<Character> flags;
 
-    public ParametricCommandExecutor(CommandClass instance, Command command, List<ParameterData> parameters, ParametricCommandRegistry registry, Method method) {
+    public ParametricCommandExecutor(CommandClass instance, Command command, List<ParameterData> parameters, ParameterProviderRegistry registry, Method method) {
         this.instance = instance;
         this.command = command;
         this.parameters = parameters;
-        this.registry = registry;
+        providerRegistry = registry;
         this.method = method;
 
         subCommands = new ArrayList<>();
@@ -146,14 +146,14 @@ class ParametricCommandExecutor implements AdvancedCommand {
                 continue;
             }
 
-            if (!registry.hasRegisteredTransformer(type)) {
+            if (!providerRegistry.hasRegisteredTransformer(type)) {
                 throw new CommandException(new NoTransformerFound(type));
             }
 
-            ParameterProvider transformer = registry.getParameterTransformer(type, annotationType);
+            ParameterProvider transformer = providerRegistry.getParameterTransformer(type, annotationType);
 
             if (transformer == null) {
-                transformer = registry.getParameterTransformer(type);
+                transformer = providerRegistry.getParameterTransformer(type);
             }
 
             Object object;
@@ -201,11 +201,11 @@ class ParametricCommandExecutor implements AdvancedCommand {
                 annotationType = parameter.getModifiers().get(0).annotationType();
             }
 
-            if (!registry.hasRegisteredTransformer(parameter.getType(), annotationType)) {
+            if (!providerRegistry.hasRegisteredTransformer(parameter.getType(), annotationType)) {
                 throw new CommandException(new NoTransformerFound(parameter.getType()));
             }
 
-            ParameterProvider transformer = registry.getParameterTransformer(parameter.getType(), annotationType);
+            ParameterProvider transformer = providerRegistry.getParameterTransformer(parameter.getType(), annotationType);
 
             if (!transformer.isProvided()) {
                 continue;
@@ -217,7 +217,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
             index++;
         }
 
-        int argumentIndex = argumentArray.getSize() - 1 ;
+        int argumentIndex = argumentArray.getSize() - 1;
 
         if (argumentIndex >= typeMap.size()) {
             return suggestions;
@@ -226,11 +226,11 @@ class ParametricCommandExecutor implements AdvancedCommand {
         Class<?> parameterType = typeMap.get(argumentIndex);
         Class<?> annotationType = annotationTypeMap.get(argumentIndex);
 
-        if (!registry.hasRegisteredTransformer(parameterType, annotationType)) {
+        if (!providerRegistry.hasRegisteredTransformer(parameterType, annotationType)) {
             throw new CommandException(new NoTransformerFound(parameterType));
         }
 
-        ParameterProvider transformer = registry.getParameterTransformer(parameterType,annotationType);
+        ParameterProvider transformer = providerRegistry.getParameterTransformer(parameterType, annotationType);
 
         String parameterText = argumentArray.get(argumentIndex);
 

@@ -7,8 +7,7 @@ import me.fixeddev.bcm.basic.PermissionMessageProvider;
 import me.fixeddev.bcm.basic.exceptions.CommandException;
 import me.fixeddev.bcm.basic.exceptions.NoMoreArgumentsException;
 import me.fixeddev.bcm.parametric.annotation.Flag;
-import me.fixeddev.bcm.parametric.annotation.JoinedString;
-import me.fixeddev.bcm.parametric.providers.BooleanProvider;
+import me.fixeddev.bcm.parametric.providers.ParameterProviderRegistry;
 import me.fixeddev.bcm.AbstractAdvancedCommand;
 import me.fixeddev.bcm.AdvancedCommand;
 import me.fixeddev.bcm.basic.ArgumentArray;
@@ -18,11 +17,6 @@ import me.fixeddev.bcm.basic.exceptions.ArgumentsParseException;
 import me.fixeddev.bcm.basic.exceptions.NoPermissionsException;
 import me.fixeddev.bcm.parametric.annotation.Command;
 import me.fixeddev.bcm.parametric.annotation.Parameter;
-import me.fixeddev.bcm.parametric.providers.DoubleProvider;
-import me.fixeddev.bcm.parametric.providers.IntegerProvider;
-import me.fixeddev.bcm.parametric.providers.JoinedStringProvider;
-import me.fixeddev.bcm.parametric.providers.NamespaceProvider;
-import me.fixeddev.bcm.parametric.providers.StringParameterProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,49 +24,18 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class ParametricCommandHandler extends BasicCommandHandler implements ParametricCommandRegistry {
 
-    private Map<Class<?>, Map<Class<?>, ParameterProvider>> parameterTransformers;
+    private ParameterProviderRegistry registry;
 
-    public ParametricCommandHandler(Authorizer authorizer, PermissionMessageProvider messageProvider, Logger logger) {
+    public ParametricCommandHandler(Authorizer authorizer, PermissionMessageProvider messageProvider, ParameterProviderRegistry registry, Logger logger) {
         super(authorizer, messageProvider, logger);
 
-        parameterTransformers = new ConcurrentHashMap<>();
-
-        registerParameterTransfomer(Namespace.class, new NamespaceProvider());
-        registerParameterTransfomer(String.class, new StringParameterProvider());
-        registerParameterTransformer(String.class, JoinedString.class, new JoinedStringProvider());
-
-        registerParameterTransfomer(boolean.class, new BooleanProvider());
-        registerParameterTransfomer(Boolean.class, new BooleanProvider());
-
-        registerParameterTransfomer(double.class, new DoubleProvider());
-        registerParameterTransfomer(Double.class, new DoubleProvider());
-
-        registerParameterTransfomer(int.class, new IntegerProvider());
-        registerParameterTransfomer(Integer.class, new IntegerProvider());
-
-    }
-
-    @Override
-    public <T> void registerParameterTransformer(@NotNull Class<T> clazz, Class<?> annotation, @NotNull ParameterProvider<T> parameterProvider) {
-        if (hasRegisteredTransformer(clazz, annotation)) {
-            if (annotation == null) {
-                throw new IllegalStateException("Failed to register parameter transformer for class " + clazz.getName() + ", there's already a registered parameter transformer!");
-            }
-            throw new IllegalStateException("Failed to register parameter transformer for class " + clazz.getName() + " and annotation " + annotation.getName() + ", there's already a registered parameter transformer!");
-        }
-        parameterTransformers.computeIfAbsent(clazz, aClass -> new HashMap<>()).put(annotation, parameterProvider);
-    }
-
-    @Override
-    public <T> boolean hasRegisteredTransformer(@NotNull Class<T> clazz, Class<?> annotationType) {
-        return parameterTransformers.computeIfAbsent(clazz, aClass -> new HashMap<>()).containsKey(annotationType);
+        this.registry = registry;
     }
 
     @Override
@@ -121,14 +84,8 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
 
     @NotNull
     @Override
-    public Map<Class<?>, Map<Class<?>, ParameterProvider>> getRegisteredParameterTransformers() {
-        return parameterTransformers;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> ParameterProvider<T> getParameterTransformer(@NotNull Class<T> clazz, @Nullable Class<?> annotationType) {
-        return (ParameterProvider<T>) parameterTransformers.computeIfAbsent(clazz, aClass -> new HashMap<>()).get(annotationType);
+    public ParameterProviderRegistry getParameterProviderRegistry() {
+        return registry;
     }
 
     private CommandTreeResult createCommandTree(AdvancedCommand callable, String alias) {
@@ -331,7 +288,7 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
             parametersData.add(parameterData);
         }
 
-        return new ParametricCommandExecutor(commandClass, command, parametersData, this, clazzMethod);
+        return new ParametricCommandExecutor(commandClass, command, parametersData, registry, clazzMethod);
     }
 
     protected ParameterData getParameterData(Method clazzMethod, Class<?> type, Annotation[] annotations) {
