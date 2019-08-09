@@ -10,16 +10,9 @@ import java.lang.annotation.Annotation;
 
 public class DoubleProvider implements ParameterProvider<Double> {
     @Override
-    public Double transformParameter(ArgumentStack arguments, Namespace namespace,Annotation annotation, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException {
-        try {
+    public Double transformParameter(ArgumentStack arguments, Namespace namespace,Annotation annotation) throws NoMoreArgumentsException, ArgumentsParseException {
             return arguments.nextDouble();
-        } catch (ArgumentsParseException e) {
-            if (defaultValue == null || defaultValue.isEmpty()) {
-                throw e;
-            }
 
-            return Double.parseDouble(defaultValue);
-        }
     }
     @Override
     public boolean isProvided() {

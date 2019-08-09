@@ -10,7 +10,7 @@ import java.lang.annotation.Annotation;
 
 public class NamespaceProvider implements ParameterProvider<Namespace> {
     @Override
-    public Namespace transformParameter(ArgumentStack arguments, Namespace namespace,Annotation annotation, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException {
+    public Namespace transformParameter(ArgumentStack arguments, Namespace namespace, Annotation annotation) throws NoMoreArgumentsException, ArgumentsParseException {
         return namespace;
     }
 

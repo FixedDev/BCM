@@ -9,16 +9,8 @@ import java.lang.annotation.Annotation;
 
 public class StringParameterProvider implements ParameterProvider<String> {
     @Override
-    public String transformParameter(ArgumentStack arguments, Namespace namespace, Annotation annotation, String defaultValue) throws NoMoreArgumentsException {
-        try {
-            return arguments.next();
-        } catch (NoMoreArgumentsException e) {
-            if (defaultValue == null || defaultValue.isEmpty()) {
-                throw e;
-            }
-
-            return defaultValue;
-        }
+    public String transformParameter(ArgumentStack arguments, Namespace namespace, Annotation annotation) throws NoMoreArgumentsException {
+        return arguments.next();
     }
 
     @Override

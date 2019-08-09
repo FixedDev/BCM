@@ -12,39 +12,28 @@ import java.util.StringJoiner;
 
 public class JoinedStringProvider implements ParameterProvider<String> {
     @Override
-    public String transformParameter(ArgumentStack arguments, Namespace namespace, Annotation annotation, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException {
+    public String transformParameter(ArgumentStack arguments, Namespace namespace, Annotation annotation) throws NoMoreArgumentsException, ArgumentsParseException {
         if (!(annotation instanceof JoinedString)) {
             throw new ArgumentsParseException(null, String.class, annotation.annotationType(), "The annotation type isn't JoinedString");
         }
 
         JoinedString joinedString = (JoinedString) annotation;
-        try {
-            StringJoiner joiner = new StringJoiner(" ");
 
-            int consumedArgs = 1;
+        StringJoiner joiner = new StringJoiner(" ");
 
-            while (arguments.hasNext()
-                    && (joinedString.value() == -1 || consumedArgs <= joinedString.value())) {
-                joiner.add(arguments.next());
+        int consumedArgs = 1;
 
-                consumedArgs++;
-            }
+        while (arguments.hasNext()
+                && (joinedString.value() == -1 || consumedArgs <= joinedString.value())) {
+            joiner.add(arguments.next());
 
-            String returnValue = joiner.toString();
-
-            if ((defaultValue != null && !defaultValue.trim().isEmpty())
-                    && returnValue.trim().isEmpty()) {
-                return defaultValue;
-            }
-
-            return returnValue.trim();
-        } catch (NoMoreArgumentsException e) {
-            if (defaultValue == null || defaultValue.isEmpty()) {
-                throw e;
-            }
-
-            return defaultValue;
+            consumedArgs++;
         }
+
+        String returnValue = joiner.toString();
+
+        return returnValue.trim();
+
     }
 
     @Override

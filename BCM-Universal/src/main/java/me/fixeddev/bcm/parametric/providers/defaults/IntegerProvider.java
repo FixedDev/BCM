@@ -10,17 +10,10 @@ import java.lang.annotation.Annotation;
 
 public class IntegerProvider implements ParameterProvider<Integer> {
     @Override
-    public Integer transformParameter(ArgumentStack arguments, Namespace namespace, Annotation annotation, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException {
-        try {
-            return arguments.nextInt();
-        } catch (ArgumentsParseException e) {
-            if (defaultValue == null || defaultValue.isEmpty()) {
-                throw e;
-            }
-
-            return Integer.parseInt(defaultValue);
-        }
+    public Integer transformParameter(ArgumentStack arguments, Namespace namespace, Annotation annotation) throws NoMoreArgumentsException, ArgumentsParseException {
+        return arguments.nextInt();
     }
+
     @Override
     public boolean isProvided() {
         return true;
