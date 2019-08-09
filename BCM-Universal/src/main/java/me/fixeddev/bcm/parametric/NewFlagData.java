@@ -1,7 +1,5 @@
 package me.fixeddev.bcm.parametric;
 
-import java.util.Optional;
-
 public class NewFlagData implements IParameterData {
 
     private char flagName;
@@ -29,10 +27,5 @@ public class NewFlagData implements IParameterData {
     @Override
     public ParameterType getType() {
         return ParameterType.FLAG;
-    }
-
-    @Override
-    public Optional<String> getDefaultValue() {
-        return Optional.of("false");
     }
 }
