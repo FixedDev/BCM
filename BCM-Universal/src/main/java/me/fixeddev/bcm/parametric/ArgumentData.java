@@ -1,25 +1,26 @@
 package me.fixeddev.bcm.parametric;
 
-import me.fixeddev.bcm.parametric.annotation.Parameter;
-import org.jetbrains.annotations.NotNull;
-
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class ArgumentData implements IParameterData {
 
     private String name;
+    private List<Annotation> modifiers;
     private Class<?> parameterType;
     private String defaultValue;
 
-    public ArgumentData(String name, Class<?> parameterType, String defaultValue) {
+    public ArgumentData(String name, List<Annotation> modifiers, Class<?> parameterType, String defaultValue) {
         this.name = name;
+        this.modifiers = modifiers;
         this.parameterType = parameterType;
         this.defaultValue = defaultValue;
     }
 
-    public static ArgumentData valueOf(@NotNull Class<?> parameterType, @NotNull Parameter parameter, me.fixeddev.bcm.parametric.annotation.Optional optional) {
-        String defaultValue = optional == null ? null : optional.value();
-        return new ArgumentData(parameter.value(), parameterType, defaultValue);
+    public ArgumentData(String name, Class<?> parameterType, String defaultValue) {
+        this(name, new ArrayList<>(), parameterType, defaultValue);
     }
 
     /**
@@ -27,6 +28,10 @@ public class ArgumentData implements IParameterData {
      */
     public String getName() {
         return name;
+    }
+
+    public List<Annotation> getModifiers() {
+        return modifiers;
     }
 
     @Override
