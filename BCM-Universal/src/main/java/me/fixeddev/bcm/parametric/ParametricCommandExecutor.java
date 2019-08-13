@@ -149,7 +149,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
                 continue;
             }
 
-            if (!providerRegistry.hasRegisteredTransformer(type)) {
+            if (!providerRegistry.hasRegisteredTransformer(type, annotationType)) {
                 throw new CommandException(new NoTransformerFound(type));
             }
 
