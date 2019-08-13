@@ -238,7 +238,7 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
         }
 
         if (dataAnnotation == null) {
-            return new ArgumentData(type.getSimpleName(), type, defaultValue);
+            return new ArgumentData(type.getSimpleName(), modifiers, type, defaultValue);
         }
 
         ParameterData parameterData;
