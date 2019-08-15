@@ -1,5 +1,4 @@
-###BCM (BetterCommandManager)
-
+### BCM (BetterCommandManager)
 I created this command manager one night after I needed a Better Command Manager to replace my old annotation based command manager.
 This was created as a private project, but after I seen that some people liked my command manager I released it as a Open Source Project.
 
