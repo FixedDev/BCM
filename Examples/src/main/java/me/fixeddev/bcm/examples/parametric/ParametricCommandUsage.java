@@ -18,6 +18,8 @@ import me.fixeddev.bcm.parametric.ParametricCommandHandler;
 import me.fixeddev.bcm.parametric.annotation.Command;
 import me.fixeddev.bcm.parametric.annotation.Flag;
 import me.fixeddev.bcm.parametric.annotation.JoinedString;
+import me.fixeddev.bcm.parametric.annotation.Optional;
+import me.fixeddev.bcm.parametric.providers.ParameterProviderRegistry;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,9 +30,14 @@ public class ParametricCommandUsage {
         PermissionMessageProvider messageProvider = new NoOpPermissionMessageProvider(); // This is for i18n no permission support
         Logger logger = Logger.getLogger("CommandsLog"); // A logger to log the commmands registration
 
-        ParametricCommandHandler handler = new ParametricCommandHandler(authorizer, messageProvider, logger); // The class that registers the parametric commands and dispatch them
+        logger.setLevel(Level.ALL);
 
-        handler.registerParameterTransformer(Sender.class, null, new SenderProvider());
+        // Create the registry for the parameter providers
+        ParameterProviderRegistry registry = ParameterProviderRegistry.createRegistry();
+        // Register the sender provider
+        registry.registerParameterTransfomer(Sender.class, new SenderProvider());
+
+        ParametricCommandHandler handler = new ParametricCommandHandler(authorizer, messageProvider, registry, logger); // The class that registers the parametric commands and dispatch them
 
         handler.registerCommandClass(new TestCommandClass()); // This registers all the commands of that class into the handler, now they can be dispatched by this instance
 
@@ -39,7 +46,8 @@ public class ParametricCommandUsage {
 
         try {
             handler.dispatchCommand(namespace, "test");
-            handler.dispatchCommand(namespace, "test subcommand");
+            handler.dispatchCommand(namespace, "test ola");
+            handler.dispatchCommand(namespace, "test subcommand ola");
             handler.dispatchCommand(namespace, "test withflag -f");
         } catch (CommandException e) {
             logger.log(Level.SEVERE, "The command failed to execute ;(", e);
@@ -56,7 +64,7 @@ public class ParametricCommandUsage {
     public static class TestCommandClass implements CommandClass {
 
         @Command(names = "test")
-        public boolean testCommand(Sender sender, @JoinedString String message) {
+        public boolean testCommand(Sender sender, @JoinedString @Optional("test") String message) {
             System.out.println("Hello " + sender.getName() + " " + message);
 
             return true;

@@ -1,4 +1,4 @@
-package me.fixeddev.bcm.parametric;
+package me.fixeddev.bcm.parametric.providers;
 
 import me.fixeddev.bcm.basic.ArgumentStack;
 import me.fixeddev.bcm.basic.Namespace;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface ParameterProvider<T> {
-    T transformParameter(ArgumentStack arguments, Namespace namespace, Annotation annotation, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException;
+    T transformParameter(ArgumentStack arguments, Namespace namespace, Annotation annotation) throws NoMoreArgumentsException, ArgumentsParseException;
 
     default List<String> getSuggestions(String text, Namespace namespace){
         return new ArrayList<>();

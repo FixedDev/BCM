@@ -1,48 +1,14 @@
 package me.fixeddev.bcm.parametric;
 
-import me.fixeddev.bcm.parametric.annotation.Optional;
-import me.fixeddev.bcm.parametric.annotation.Parameter;
+public interface ParameterData {
 
-import java.lang.annotation.Annotation;
-import java.util.List;
+    /**
+     * @return - The class type of this parameter
+     */
+    Class<?> getParameterType();
 
-class ParameterData {
-
-    private String name;
-
-    private Class<?> type;
-    private List<Annotation> modifiers;
-
-    private boolean flag;
-
-    private String defaultValue;
-
-    public ParameterData(Class<?> type, Parameter parameter, Optional optional, List<Annotation> modifiers) {
-        name = parameter.value();
-        this.type = type;
-        this.modifiers = modifiers;
-
-        flag = parameter.isFlag();
-        defaultValue = optional.value();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Class<?> getType() {
-        return type;
-    }
-
-    public List<Annotation> getModifiers() {
-        return modifiers;
-    }
-
-    public boolean isFlag() {
-        return flag;
-    }
-
-    public String getDefaultValue() {
-        return defaultValue;
-    }
+    /**
+     * @return - The ParameterType of this parameter, ARGUMENT or FLAG
+     */
+    ParameterType getType();
 }

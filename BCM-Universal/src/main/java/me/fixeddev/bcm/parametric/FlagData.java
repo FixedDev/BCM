@@ -1,39 +1,31 @@
 package me.fixeddev.bcm.parametric;
 
-import me.fixeddev.bcm.parametric.annotation.Flag;
-import me.fixeddev.bcm.parametric.annotation.Optional;
-import me.fixeddev.bcm.parametric.annotation.Parameter;
+public class FlagData implements ParameterData {
 
-import java.lang.annotation.Annotation;
-import java.util.List;
+    private char flagName;
 
-class FlagData extends ParameterData {
-
-    public FlagData(Parameter parameter, Optional optional, List<Annotation> modifiers) {
-        super(boolean.class, parameter, optional, modifiers);
+    public FlagData(char flagName) {
+        this.flagName = flagName;
     }
 
-    public FlagData(Flag parameter, Optional optional, List<Annotation> modifiers) {
-        super(boolean.class, getFromFlag(parameter), optional, modifiers);
+    public static FlagData valueOf(char name){
+        return new FlagData(name);
     }
 
-    public static Parameter getFromFlag(Flag flag){
-        return new Parameter() {
+    /**
+     * @return - The name of this flag, just a letter
+     */
+    public char getName() {
+        return flagName;
+    }
 
-            @Override
-            public Class<? extends Annotation> annotationType() {
-                return Parameter.class;
-            }
+    @Override
+    public Class<?> getParameterType() {
+        return boolean.class;
+    }
 
-            @Override
-            public String value() {
-                return flag.value() + "";
-            }
-
-            @Override
-            public boolean isFlag() {
-                return true;
-            }
-        };
+    @Override
+    public ParameterType getType() {
+        return ParameterType.FLAG;
     }
 }

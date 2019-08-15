@@ -17,6 +17,9 @@ public class Sender {
     }
 
     public boolean hasPermission(String permission) {
+        if(permission == null || permission.trim().isEmpty()){
+            return true;
+        }
         return permissions.contains(permission);
     }
 }

@@ -4,7 +4,7 @@ import me.fixeddev.bcm.basic.ArgumentStack;
 import me.fixeddev.bcm.basic.Namespace;
 import me.fixeddev.bcm.basic.exceptions.ArgumentsParseException;
 import me.fixeddev.bcm.basic.exceptions.NoMoreArgumentsException;
-import me.fixeddev.bcm.parametric.ParameterProvider;
+import me.fixeddev.bcm.parametric.providers.ParameterProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -17,34 +17,26 @@ import java.util.stream.Collectors;
 
 public class OfflinePlayerProvider implements ParameterProvider<OfflinePlayer> {
     @Override
-    public OfflinePlayer transformParameter(ArgumentStack arguments, Namespace namespace, Annotation modifier, String defaultValue) throws NoMoreArgumentsException, ArgumentsParseException {
-        if (arguments.hasNext()) {
-            String next = arguments.next();
+    public OfflinePlayer transformParameter(ArgumentStack arguments, Namespace namespace, Annotation modifier) throws NoMoreArgumentsException, ArgumentsParseException {
+        String next = arguments.next();
 
-            OfflinePlayer player = Bukkit.getOfflinePlayer(next);
+        CommandSender sender = namespace.getObject(CommandSender.class,"sender");
 
-            if (player == null) {
-                try {
-                    player = Bukkit.getOfflinePlayer(UUID.fromString(next));
-                } catch (IllegalArgumentException e) {
-                    return null;
-                }
+        if(next.equals("self") && sender instanceof Player){
+            return (OfflinePlayer) namespace.getObject(CommandSender.class,"sender");
+        }
+
+        OfflinePlayer player = Bukkit.getOfflinePlayer(next);
+
+        if (player == null) {
+            try {
+                player = Bukkit.getOfflinePlayer(UUID.fromString(next));
+            } catch (IllegalArgumentException e) {
+                return null;
             }
-
-            return player;
         }
 
-        if (defaultValue == null || defaultValue.trim().isEmpty()) {
-            throw new NoMoreArgumentsException(arguments.getSize(), arguments.getPosition());
-        }
-
-        CommandSender sender = namespace.getObject(CommandSender.class, "sender");
-
-        if (defaultValue.equalsIgnoreCase("self") && sender instanceof Player) {
-            return (OfflinePlayer) sender;
-        }
-
-        throw new NoMoreArgumentsException(arguments.getSize(), arguments.getPosition());
+        return player;
     }
 
     @Override
