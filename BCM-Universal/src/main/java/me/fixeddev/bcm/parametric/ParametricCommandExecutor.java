@@ -149,7 +149,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
                 continue;
             }
 
-            if (!providerRegistry.hasRegisteredTransformer(type)) {
+            if (!providerRegistry.hasRegisteredTransformer(type, annotationType)) {
                 throw new CommandException(new NoTransformerFound(type));
             }
 
@@ -232,7 +232,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
             index++;
         }
 
-        int argumentIndex = argumentArray.getSize() - 1;
+        int argumentIndex = argumentArray.getSize() > 0 ? argumentArray.getSize() - 1 : 0;
 
         if (argumentIndex >= typeMap.size()) {
             return suggestions;

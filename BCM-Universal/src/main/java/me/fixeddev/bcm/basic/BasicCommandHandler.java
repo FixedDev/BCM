@@ -143,7 +143,7 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
         logger.log(Level.INFO, "Registered command {0}", command.getNames()[0]);
 
         for (String name : command.getNames()) {
-            this.commandMap.put(name, command);
+            this.commandMap.put(name.toLowerCase(), command);
         }
     }
 
@@ -177,7 +177,7 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
 
         int i = 0;
         while (!commandMap.containsKey(label.toString()) && i < args.length) {
-            label = new StringBuilder(args[i]);
+            label.append(args[i].toLowerCase());
             i++;
         }
 
@@ -199,7 +199,7 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
 
             for (ICommand subCommand : command.getSubCommands()) {
                 for (String name : subCommand.getNames()) {
-                    subCommands.put(name, subCommand);
+                    subCommands.put(name.toLowerCase(), subCommand);
                 }
             }
 
@@ -220,6 +220,8 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
                 args = subCommandArgs;
 
                 label.append(" ").append(subCommandLabel);
+            } else {
+                break;
             }
         }
 
