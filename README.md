@@ -14,7 +14,7 @@ This was created as a private project, but after I seen that some people liked m
 
 Here a example of usage in bukkit
 ```
-    @Command(names = "fly")
+    @Command(names = "fly", min = 0, max = 1)
     public boolean flyCommand(CommandSender sender, @Optional("self") String targetName) {
         if (player.equalsIgnoreCase("self") && !(sender instanceof Player)) {
             return false;
