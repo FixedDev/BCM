@@ -33,10 +33,10 @@ public interface AdvancedCommand extends ICommand {
 
     void unregisterSubCommand(ICommand command);
 
-    boolean execute(CommandContext context) throws CommandException, NoPermissionsException, NoMoreArgumentsException, ArgumentsParseException;
+    boolean execute(CommandContext context) throws CommandException, NoPermissionsException,  ArgumentsParseException;
 
     @Override
-    default boolean run(Namespace namespace, ArgumentArray arguments) throws CommandException, NoPermissionsException, NoMoreArgumentsException, ArgumentsParseException {
+    default boolean run(Namespace namespace, ArgumentArray arguments) throws CommandException, NoPermissionsException,  ArgumentsParseException {
         if (arguments.getSize() < getMinArguments()) {
             return false;
         }
