@@ -1,17 +1,22 @@
 package me.fixeddev.bcm.basic.exceptions;
 
-import me.fixeddev.bcm.basic.ICommand;
-
-public class CommandUsageException extends Exception{
-
-    private ICommand command;
-
-    public CommandUsageException(String usageMessage, ICommand command) {
-        super(usageMessage);
-        this.command = command;
+public class CommandUsageException extends Exception {
+    public CommandUsageException() {
     }
 
-    public ICommand getCommand() {
-        return command;
+    public CommandUsageException(String message) {
+        super(message);
+    }
+
+    public CommandUsageException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public CommandUsageException(Throwable cause) {
+        super(cause);
+    }
+
+    public CommandUsageException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }
