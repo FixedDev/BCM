@@ -2,7 +2,6 @@ package me.fixeddev.bcm.basic;
 
 import me.fixeddev.bcm.basic.exceptions.CommandException;
 import me.fixeddev.bcm.basic.exceptions.NoMoreArgumentsException;
-import me.fixeddev.bcm.basic.exceptions.ArgumentsParseException;
 import me.fixeddev.bcm.basic.exceptions.CommandUsageException;
 import me.fixeddev.bcm.basic.exceptions.NoPermissionsException;
 
@@ -52,7 +51,7 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
     }
 
     @Override
-    public boolean dispatchCommand(Namespace namespace, String commandLine) throws CommandException, NoPermissionsException, CommandUsageException, ArgumentsParseException {
+    public boolean dispatchCommand(Namespace namespace, String commandLine) throws CommandException, NoPermissionsException, CommandUsageException {
         Optional<CommandSearchResult> result = getCommandFromCommandLine(commandLine);
 
         if (!result.isPresent()) {
@@ -80,25 +79,18 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
 
         try {
             usage = command.run(namespace, arguments);
-        } catch (ArgumentsParseException ex) {
-            throw ex;
-        } catch (CommandException ex) {
-            if (ex.getCause() == null) {
-                throw ex;
-            }
-
+        }  catch (CommandException ex) {
             if (!(ex.getCause() instanceof NoMoreArgumentsException)) {
                 throw ex;
             }
 
             usage = false;
-
         } catch (Exception ex) {
             throw new CommandException(ex);
         }
 
         if (!usage && !command.getUsage().isEmpty()) {
-            throw new CommandUsageException(command.getUsage().replace("<command>", label), command);
+            throw new CommandUsageException(command.getUsage().replace("<command>", label));
         }
 
         return true;
