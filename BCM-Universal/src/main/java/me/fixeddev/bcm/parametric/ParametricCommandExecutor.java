@@ -238,7 +238,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
         Class<?> annotationType = annotationTypeMap.get(argumentIndex);
 
         if (!providerRegistry.hasRegisteredTransformer(parameterType, annotationType)) {
-            throw new CommandException(new NoTransformerFoundException(parameterType));
+            throw new NoTransformerFoundException(parameterType);
         }
 
         ParameterProvider transformer = providerRegistry.getParameterTransformer(parameterType, annotationType);
