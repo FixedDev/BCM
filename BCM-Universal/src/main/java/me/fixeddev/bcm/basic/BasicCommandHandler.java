@@ -79,11 +79,9 @@ public class BasicCommandHandler implements CommandRegistry, CommandDispatcher {
 
         try {
             usage = command.run(namespace, arguments);
+        }catch (CommandUsageException ex){
+            throw ex;
         }  catch (CommandException ex) {
-            if (!(ex.getCause() instanceof NoMoreArgumentsException)) {
-                throw ex;
-            }
-
             usage = false;
         } catch (Exception ex) {
             throw new CommandException(ex);
