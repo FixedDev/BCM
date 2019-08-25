@@ -56,7 +56,7 @@ public class ArgumentStack implements Cloneable {
         return size;
     }
 
-    public int nextInt() throws NoMoreArgumentsException, ArgumentsParseException {
+    public int nextInt() throws ArgumentsParseException {
         String next = next();
         try {
             return Integer.parseInt(next);
@@ -65,7 +65,7 @@ public class ArgumentStack implements Cloneable {
         }
     }
 
-    public float nextFloat() throws NoMoreArgumentsException, ArgumentsParseException {
+    public float nextFloat() throws ArgumentsParseException {
         String next = next();
 
         try {
@@ -75,7 +75,7 @@ public class ArgumentStack implements Cloneable {
         }
     }
 
-    public double nextDouble() throws NoMoreArgumentsException, ArgumentsParseException {
+    public double nextDouble() throws ArgumentsParseException {
         String next = next();
 
         try {
@@ -85,7 +85,7 @@ public class ArgumentStack implements Cloneable {
         }
     }
 
-    public byte nextByte() throws NoMoreArgumentsException, ArgumentsParseException {
+    public byte nextByte() throws ArgumentsParseException {
         String next = next();
 
         try {
@@ -95,7 +95,7 @@ public class ArgumentStack implements Cloneable {
         }
     }
 
-    public boolean nextBoolean() throws NoMoreArgumentsException, ArgumentsParseException {
+    public boolean nextBoolean() throws  ArgumentsParseException {
         String next = next();
 
         if (!next.equalsIgnoreCase("true") && !next.equalsIgnoreCase("false")) {
