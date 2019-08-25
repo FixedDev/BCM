@@ -64,18 +64,27 @@ public class BukkitCommandWrapper extends Command {
             }
 
         } catch (me.fixeddev.bcm.basic.exceptions.CommandException ex) {
-            commandSender.sendMessage(ex.getMessage());
+            String exceptionMessage = ex.getMessage();
+
+            if (exceptionMessage != null && !exceptionMessage.isEmpty()) {
+                commandSender.sendMessage(exceptionMessage);
+            }
 
             Bukkit.getLogger().log(Level.SEVERE, ex.getMessage(), ex);
         } catch (NoPermissionsException ex) {
             commandSender.sendMessage(ChatColor.RED + ex.getMessage());
 
             return true;
-        } catch (CommandUsageException | ArgumentsParseException ex) {
+        } catch (CommandUsageException ex) {
             String message = ChatColor.RED + ChatColor.translateAlternateColorCodes('&', ex.getMessage());
 
             String[] splittedMessage = message.split("\n");
-            splittedMessage[0] = ChatColor.RED + "Usage: " + splittedMessage[0];
+
+            if (ex instanceof ArgumentsParseException) {
+                splittedMessage[0] = ChatColor.RED + "Error: " + splittedMessage[0];
+            } else {
+                splittedMessage[0] = ChatColor.RED + "Usage: " + splittedMessage[0];
+            }
 
             for (String s : splittedMessage) {
                 commandSender.sendMessage(s);
@@ -112,7 +121,14 @@ public class BukkitCommandWrapper extends Command {
                 } catch (NoPermissionsException ex) {
                     sender.sendMessage(ex.getMessage());
                 } catch (NoMoreArgumentsException ex) {
-                    // ignored, it should not happen
+                    String message = ChatColor.RED + ChatColor.translateAlternateColorCodes('&', ex.getMessage());
+
+                    String[] splittedMessage = message.split("\n");
+                    splittedMessage[0] = ChatColor.RED + "Error: " + splittedMessage[0];
+
+                    for (String s : splittedMessage) {
+                        sender.sendMessage(s);
+                    }
                 }
             }
         } catch (Throwable ex) {
