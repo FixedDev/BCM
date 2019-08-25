@@ -75,16 +75,23 @@ public class BukkitCommandWrapper extends Command {
             commandSender.sendMessage(ChatColor.RED + ex.getMessage());
 
             return true;
+        } catch (ArgumentsParseException ex) {
+            String message = ChatColor.RED + ChatColor.translateAlternateColorCodes('&', ex.getMessage());
+
+            String[] splittedMessage = message.split("\n");
+            splittedMessage[0] = ChatColor.RED + "Error: " + splittedMessage[0];
+
+
+            for (String s : splittedMessage) {
+                commandSender.sendMessage(s);
+            }
+
+            return true;
         } catch (CommandUsageException ex) {
             String message = ChatColor.RED + ChatColor.translateAlternateColorCodes('&', ex.getMessage());
 
             String[] splittedMessage = message.split("\n");
-
-            if (ex instanceof ArgumentsParseException) {
-                splittedMessage[0] = ChatColor.RED + "Error: " + splittedMessage[0];
-            } else {
-                splittedMessage[0] = ChatColor.RED + "Usage: " + splittedMessage[0];
-            }
+            splittedMessage[0] = ChatColor.RED + "Usage: " + splittedMessage[0];
 
             for (String s : splittedMessage) {
                 commandSender.sendMessage(s);
@@ -97,7 +104,7 @@ public class BukkitCommandWrapper extends Command {
     }
 
     @Override
-    public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+    public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
         Validate.notNull(sender, "Sender cannot be null");
         Validate.notNull(args, "Arguments cannot be null");
         Validate.notNull(alias, "Alias cannot be null");
