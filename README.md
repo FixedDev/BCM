@@ -14,7 +14,7 @@ This was created as a private project, but after I seen that some people liked m
 
 Here a example of usage in bukkit
 ```
-    @Command(names = "fly")
+    @Command(names = "fly", min = 0, max = 1)
     public boolean flyCommand(CommandSender sender, @Optional("self") String targetName) {
         if (player.equalsIgnoreCase("self") && !(sender instanceof Player)) {
             return false;
@@ -38,4 +38,13 @@ Here a example of usage in bukkit
         
         return true;    
     }
+```
+
+Ok, thats the command, now let's assume that it is into a class called FlyCommand
+
+To register the command that class needs to implement the class CommandClass
+Also you need a ParametricCommandHandler.
+Here how you can register it
+```
+parametricCommandHandler.registerCommandClass(new FlyCommand());
 ```
