@@ -10,7 +10,7 @@ import me.fixeddev.bcm.basic.ArgumentArray;
 import me.fixeddev.bcm.basic.ICommand;
 import me.fixeddev.bcm.basic.exceptions.ArgumentsParseException;
 import me.fixeddev.bcm.parametric.annotation.Command;
-import me.fixeddev.bcm.parametric.exceptions.NoTransformerFound;
+import me.fixeddev.bcm.parametric.exceptions.NoTransformerFoundException;
 import me.fixeddev.bcm.parametric.providers.ParameterProvider;
 import me.fixeddev.bcm.parametric.providers.ParameterProviderRegistry;
 
@@ -150,7 +150,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
             }
 
             if (!providerRegistry.hasRegisteredTransformer(type, annotationType)) {
-                throw new CommandException(new NoTransformerFound(type));
+                throw new NoTransformerFoundException(type);
             }
 
             ParameterProvider transformer = providerRegistry.getParameterTransformer(type, annotationType);
@@ -171,12 +171,8 @@ class ParametricCommandExecutor implements AdvancedCommand {
                 if (object == null) {
                     object = transformer.transformParameter(defaultStack, context.getNamespace(), firstAnnotation);
                 }
-            } catch (NoMoreArgumentsException | ArgumentsParseException e) {
-                try {
-                    object = transformer.transformParameter(defaultStack, context.getNamespace(), firstAnnotation);
-                } catch (NoMoreArgumentsException | ArgumentsParseException ex) {
-                    throw new CommandException(ex);
-                }
+            } catch (ArgumentsParseException e) {
+                object = transformer.transformParameter(defaultStack, context.getNamespace(), firstAnnotation);
             }
 
             arguments.add(object);
@@ -195,7 +191,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<String> getSuggestions(Namespace namespace, ArgumentArray argumentArray) throws CommandException, NoMoreArgumentsException {
+    public List<String> getSuggestions(Namespace namespace, ArgumentArray argumentArray) throws CommandException {
         List<String> suggestions = new ArrayList<>();
 
         Map<Integer, Class<?>> typeMap = new HashMap<>();
@@ -217,7 +213,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
             }
 
             if (!providerRegistry.hasRegisteredTransformer(data.getParameterType(), annotationType)) {
-                throw new CommandException(new NoTransformerFound(data.getParameterType()));
+                throw new NoTransformerFoundException(data.getParameterType());
             }
 
             ParameterProvider transformer = providerRegistry.getParameterTransformer(data.getParameterType(), annotationType);
@@ -242,7 +238,7 @@ class ParametricCommandExecutor implements AdvancedCommand {
         Class<?> annotationType = annotationTypeMap.get(argumentIndex);
 
         if (!providerRegistry.hasRegisteredTransformer(parameterType, annotationType)) {
-            throw new CommandException(new NoTransformerFound(parameterType));
+            throw new CommandException(new NoTransformerFoundException(parameterType));
         }
 
         ParameterProvider transformer = providerRegistry.getParameterTransformer(parameterType, annotationType);
