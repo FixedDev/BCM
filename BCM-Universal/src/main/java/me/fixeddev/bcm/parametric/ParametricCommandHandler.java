@@ -45,7 +45,7 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
         if (optRegisteredCommand.isPresent() && optRegisteredCommand.get() instanceof MockCommand) {
             ICommand registeredCommand = optRegisteredCommand.get();
 
-            if(command instanceof AdvancedCommand){
+            if (command instanceof AdvancedCommand) {
                 registeredCommand.getSubCommands().forEach(((AdvancedCommand) command)::registerSubCommand);
             }
         }
@@ -76,7 +76,7 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
             for (String alias : callable.getNames()) {
                 CommandTreeResult treeResult = createCommandTree(callable, alias);
 
-                Optional<AdvancedCommand> commandResult = treeResult.commandResult();
+                Optional<ICommand> commandResult = treeResult.commandResult();
 
                 if (commandResult.isPresent()) {
                     boolean commandRegistered = isCommandRegistered(commandResult.get().getNames()[0]);
@@ -107,10 +107,28 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
         // Divide the alias in parts divided by a space
         String[] aliasParts = alias.split(" ");
 
+        String parentAlias = String.join(" ", Arrays.copyOfRange(aliasParts, 0, aliasParts.length - 2));
+
         // Check if the alias has more than 1 part(check if has spaces)
         if (aliasParts.length > 1) {
             // Get the Optional of a command with the name of the part 1 of the alias
             Optional<ICommand> command = getCommand(aliasParts[0]);
+
+            Optional<CommandSearchResult> searchResult = getCommandFromCommandLine(parentAlias);
+            if (searchResult.isPresent()) {
+                CommandSearchResult objectResult = searchResult.get();
+
+                ICommand resultCommand = objectResult.getCommand();
+
+                if (resultCommand instanceof AdvancedCommand) {
+                    CommandWrapper wrapper = new CommandWrapper(aliasParts[aliasParts.length - 1], callable);
+
+                    ((AdvancedCommand) resultCommand).registerSubCommand(wrapper);
+
+                    return createTreeResult(command.get(), true);
+                }
+
+            }
 
             // Check if the command exists and then if the type is not AdvancedCommand then stop all this process, because we can't register commands on an ICommand
             if (command.isPresent() && !(command.get() instanceof AdvancedCommand)) {
@@ -153,10 +171,10 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
         return createTreeResult(null, false);
     }
 
-    private CommandTreeResult createTreeResult(@Nullable AdvancedCommand command, boolean registeredSubCommands) {
+    private CommandTreeResult createTreeResult(@Nullable ICommand command, boolean registeredSubCommands) {
         return new CommandTreeResult() {
             @Override
-            public Optional<AdvancedCommand> commandResult() {
+            public Optional<ICommand> commandResult() {
                 return Optional.ofNullable(command);
             }
 
