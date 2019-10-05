@@ -107,7 +107,7 @@ public class ParametricCommandHandler extends BasicCommandHandler implements Par
         // Divide the alias in parts divided by a space
         String[] aliasParts = alias.split(" ");
 
-        String parentAlias = String.join(" ", Arrays.copyOfRange(aliasParts, 0, aliasParts.length - 2));
+        String parentAlias = String.join(" ", Arrays.copyOfRange(aliasParts, 0, aliasParts.length - 1));
 
         // Check if the alias has more than 1 part(check if has spaces)
         if (aliasParts.length > 1) {
